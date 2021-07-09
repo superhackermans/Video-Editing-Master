@@ -203,7 +203,7 @@ def replace_footage(suffix, clips_background, directory):
             # Cut last frame of video (audio is a little longer so ffmpeg adds a frame to the end of the snippet)
             # st()
             filelength = float(get_length(outputbgloc))
-            cutlength = (filelength - (1 / 30)) #0.042
+            cutlength = (filelength - (1 / 30))
             command = f"ffmpeg -ss -0 -i {outputbgloc} -t {cutlength} -c copy {outputbglocfinal} -hide_banner -loglevel error"
             subprocess.call(command, shell=True)
 

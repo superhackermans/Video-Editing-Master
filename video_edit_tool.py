@@ -8,6 +8,7 @@ from background_layer import *
 from framesame import *
 
 clips_images = readfile(DATA_FILE)
+clips_all =  {k: v for k, v in clips_images.items()}
 clips_pictures = {k: v for k, v in clips_images.items() if v.isdigit()}
 clips_ben = {k: v for k, v in clips_images.items() if v == "--"}
 clips_bentoc = {k: v for k, v in clips_images.items() if v == "--" or v == "toc"}
@@ -16,7 +17,6 @@ clips_cover = {k: v for k, v in clips_images.items() if v == "c1" or v == "c2" o
                or v == "c7" or v == "c8" or v == "c9"}
 clips_background = {k: v for k, v in clips_images.items() if v.isdigit()}
 clips_toc = {k: v for k, v in clips_images.items() if v == "toc"}
-clips_all =  {k: v for k, v in clips_images.items()}
 
 if __name__ == '__main__':
     make_folders()

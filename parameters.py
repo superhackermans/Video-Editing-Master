@@ -42,7 +42,6 @@ def inputToOutputNewTrimmedAndZoomed(filename):
 
 def readfile(file):
     file = open(DATA_FILE)
-
     clips = []
     images = []
     clips_images = {}
@@ -55,7 +54,6 @@ def readfile(file):
         images.append(splitLine[1].strip())
         images = [i.replace('Photo ', '') for i in images]
     clips_images = dict(zip(clips, images))
-
     file.close()
 
     return clips_images
