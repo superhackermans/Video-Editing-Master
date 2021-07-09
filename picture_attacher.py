@@ -7,7 +7,14 @@ import shutil
 def attachpictures(clips_pictures):
     print("Beginning picture attaching")
 
-    shutil.copytree(PICTURE_DIRECTORY, PICTURE_OUTPUT_DIRECTORY)
+    try:
+        os.mkdir(WAV_DIRECTORY)
+    except FileExistsError:
+        pass
+    try:
+        shutil.copytree(PICTURE_DIRECTORY, PICTURE_OUTPUT_DIRECTORY)
+    except FileExistsError:
+        pass
 
     myTrimmedVideos = []
     for file in os.listdir(OUTPUT_VIDEO_DIRECTORY):

@@ -37,7 +37,7 @@ def attachcovers(suffix, clips_cover, directory):
 
         # Matching video to audio duration and attach
         wavlen = float(get_length(OUTPUT_WAV))
-        coverlen = float(get_length(coverloc))- 1 / 24
+        coverlen = float(get_length(coverloc))-(1/24)
         ratio = (wavlen/coverlen)
         command = f'ffmpeg -i {coverloc} -i {OUTPUT_WAV} -filter_complex "[0:v]setpts=PTS*{str(ratio)}[v]" -map "[v]" -map 1:a -shortest {final_output} -hide_banner -loglevel error'
         subprocess.call(command, shell=True)

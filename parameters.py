@@ -4,6 +4,10 @@ import math
 from shutil import copyfile, rmtree
 import subprocess
 
+
+def inputToOutputFilename(filename, suffix):
+    dotIndex = filename.rfind(".")
+    return filename[:dotIndex]+suffix+filename[dotIndex:]
 def inputToOutputFilename(filename):
     dotIndex = filename.rfind(".")
     return filename[:dotIndex]+"_TRIMMED"+filename[dotIndex:]

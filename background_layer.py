@@ -63,11 +63,19 @@ def add_transparency(suffix, clips, directory):
         command = "ffmpeg -loop 1 -y -i " + TRANSPARENCY + " -i " + OUTPUT_WAV + " -shortest -acodec copy -vcodec png " + " -hide_banner -loglevel error " + FINAL_OUTPUT
         subprocess.call(command, shell=True)
 
-        filelength = float(get_length(FINAL_OUTPUT))
+        # filelength = float(get_length(FINAL_OUTPUT))
 
-        # Cut last frame of video (audio is a little longer so ffmpeg adds a frame to the end of the snippet)
-        command = f"ffmpeg -ss -0 -i {FINAL_OUTPUT} -t {filelength - 1/24} -c copy {FINALFINAL_OUTPUT} -hide_banner -loglevel error"
+        layer3 = f"{OUTPUT_VIDEO_DIRECTORY2}{filename}"
+        filelength2 = float(get_length(layer3))
+
+        command = f"ffmpeg -ss -0 -i {FINAL_OUTPUT} -t {filelength2-(1/36)} -c copy {FINALFINAL_OUTPUT} -hide_banner -loglevel error"
         subprocess.call(command, shell=True)
+
+        filelength = float(get_length(FINALFINAL_OUTPUT))
+
+        print(f"filelength of C0{k}_TRIMMEDEMPTY.MOV is {filelength}")
+        print(f"filelength of C0{k}_TRIMMED.MP4 layer 3 clip is {filelength2}")
+        print(f"The discrepancy is {filelength-filelength2}")
 
         #remove old file
         try:
@@ -82,6 +90,21 @@ def add_transparency(suffix, clips, directory):
     shutil.rmtree(WAV_DIRECTORY)
 
         #resize video clips by .88 with alpha border
+
+def length_discrepancy(file1, file2):
+    maxdiscrepancy = (1/24)/2
+    # child
+    filelen1 = float(get_length(file1))
+    # parent
+    filelen2 = float(get_length(file2))
+    # if difference is larger than maxdiscrepancy, cut 1 frame from the filelen1
+    output = inputToOutputFilename(file1, "_TRIMMED1")
+    if filelen1-filelen2 > maxdiscrepancy:
+        command = f"ffmpeg -ss -0 -i {file1} -t {filelen1-1/36} -c copy {output} -hide_banner -loglevel error"
+        subprocess.call(command, shell=True)
+    else:
+        pass
+
 
 def replace_footage(suffix, clips_background, directory):
 
@@ -180,7 +203,7 @@ def replace_footage(suffix, clips_background, directory):
             # Cut last frame of video (audio is a little longer so ffmpeg adds a frame to the end of the snippet)
             # st()
             filelength = float(get_length(outputbgloc))
-            cutlength = (filelength - (1 / 24)) #0.042
+            cutlength = (filelength - (1 / 30)) #0.042
             command = f"ffmpeg -ss -0 -i {outputbgloc} -t {cutlength} -c copy {outputbglocfinal} -hide_banner -loglevel error"
             subprocess.call(command, shell=True)
 
