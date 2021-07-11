@@ -22,9 +22,13 @@ if __name__ == '__main__':
     print("Are you sure you want to erase all files in folders? Type 'o' for only output deletion")
     x = input()
 
-    input_directories = [INPUT_VIDEO_DIRECTORY, PICTURE_DIRECTORY, INPUT_COVER_DIRECTORY, DATA_FILE]
-    output_directories = [OUTPUT_VIDEO_DIRECTORY, WAV_CONVERSION_FILES, OUTPUT_COVER_DIRECTORY, PICTURE_OUTPUT_DIRECTORY,]
-    delete_directories = [WAV_DIRECTORY, PICTURE_OUTPUT_DIRECTORY, OUTPUT_VIDEO_DIRECTORY3, WAV_CONVERSION_FILES, "./TEMP", OUTPUT_VIDEO_DIRECTORY2, OUTPUT_COVER_DIRECTORY, OUTPUT_VIDEO_DIRECTORY]
+    input_directories = [INPUT_VIDEO_DIRECTORY, PICTURE_DIRECTORY,
+                         INPUT_COVER_DIRECTORY, DATA_FILE]
+    output_directories = [OUTPUT_VIDEO_DIRECTORY, WAV_CONVERSION_FILES,
+                          OUTPUT_COVER_DIRECTORY, PICTURE_OUTPUT_DIRECTORY,]
+    delete_directories = [WAV_DIRECTORY, PICTURE_OUTPUT_DIRECTORY, OUTPUT_VIDEO_DIRECTORY3,
+                          WAV_CONVERSION_FILES, "./TEMP", OUTPUT_VIDEO_DIRECTORY2,
+                          OUTPUT_COVER_DIRECTORY, OUTPUT_VIDEO_DIRECTORY]
 
     if x == "yes" or x == "y":
         for file in input_directories:

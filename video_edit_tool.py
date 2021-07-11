@@ -8,7 +8,7 @@ from background_layer import *
 from framesame import *
 
 clips_images = readfile(DATA_FILE)
-clips_all =  {k: v for k, v in clips_images.items()}
+clips_all = {k: v for k, v in clips_images.items()}
 clips_pictures = {k: v for k, v in clips_images.items() if v.isdigit()}
 clips_ben = {k: v for k, v in clips_images.items() if v == "--"}
 clips_bentoc = {k: v for k, v in clips_images.items() if v == "--" or v == "toc"}
