@@ -91,36 +91,35 @@ def add_transparency(suffix, clips, directory):
 
         #resize video clips by .88 with alpha border
 
-def length_discrepancy(file1, file2):
-    maxdiscrepancy = (1/24)/2
-    # child
-    filelen1 = float(get_length(file1))
-    # parent
-    filelen2 = float(get_length(file2))
-    # if difference is larger than maxdiscrepancy, cut 1 frame from the filelen1
-    output = inputToOutputFilename(file1, "_TRIMMED1")
-    if filelen1-filelen2 > maxdiscrepancy:
-        command = f"ffmpeg -ss -0 -i {file1} -t {filelen1-1/36} -c copy {output} -hide_banner -loglevel error"
-        subprocess.call(command, shell=True)
-    else:
-        pass
-
+# def length_discrepancy(file1, file2):
+#     maxdiscrepancy = (1/24)/2
+#     # child
+#     filelen1 = float(get_length(file1))
+#     # parent
+#     filelen2 = float(get_length(file2))
+#     # if difference is larger than maxdiscrepancy, cut 1 frame from the filelen1
+#     output = inputToOutputFilename(file1, "_TRIMMED1")
+#     if filelen1-filelen2 > maxdiscrepancy:
+#         command = f"ffmpeg -ss -0 -i {file1} -t {filelen1-1/36} -c copy {output} -hide_banner -loglevel error"
+#         subprocess.call(command, shell=True)
+#     else:
+#         pass
 
 def replace_footage(suffix, clips_background, directory):
 
     # BOTTOM LAYER (trimmed_files_dup)
 
     #find consecutive clips
-    clips_background = {int(k):v for k, v in clips_background.items()}
-    clips_concat = {}
-    clips_solo = {}
-    for k, v in clips_background.items():
-        if k - 1 in clips_background:
-            clips_concat.update({k:int(v)})
-        elif k + 1 in clips_background:
-            clips_concat.update({k:int(v)})
-        else:
-            clips_solo.update({str(k):v})
+    # clips_background = {int(k):v for k, v in clips_background.items()}
+    # clips_concat = {}
+    # clips_solo = {}
+    # for k, v in clips_background.items():
+    #     if k - 1 in clips_background:
+    #         clips_concat.update({k:int(v)})
+    #     elif k + 1 in clips_background:
+    #         clips_concat.update({k:int(v)})
+    #     else:
+    #         clips_solo.update({str(k):v})
 
     # st()
     # attach solo clips
@@ -144,11 +143,11 @@ def replace_footage(suffix, clips_background, directory):
         arr = np.array(cc)
         consecutive_clips = group_consecutives(arr[:, 0])
 
-        for i in consecutive_clips:
+        for group in consecutive_clips:
             text_file = 'concat_clips.txt'
             with open(text_file, 'w') as fp:
                 pass
-            for j in i:
+            for j in group:
                 TRIMMED_LOC = f"{directory}C0{j}{suffix}"
 
                 #write it into the text file
@@ -156,10 +155,10 @@ def replace_footage(suffix, clips_background, directory):
                 with open("concat_clips.txt", "a") as file:
                     file.write(f"file '{TRIMMED_LOC}'\n")
 
-            if i[0] == i [-1]:
-                outputfilename = f"C0{i[0]}"
+            if group[0] == group[-1]:
+                outputfilename = f"C0{group[0]}"
             else:
-                outputfilename = f"C0{i[0]}-C0{i[-1]}"
+                outputfilename = f"C0{group[0]}-C0{group[-1]}"
             outputnobgloc = f"{directory}{outputfilename}.MOV"
             outputbgloc =  f"{directory}{outputfilename}_bg.MOV"
             outputbglocfinal = f"{directory}{outputfilename}bg.MOV"
@@ -210,7 +209,7 @@ def replace_footage(suffix, clips_background, directory):
             os.remove(outputnobgloc)
             os.remove(outputbgloc)
 
-            for j in i:
+            for j in group:
                 TRIMMED_LOC = f"{directory}C0{j}{suffix}"
                 # WAV_LOC = f"{directory}C0{j}_TRIMMED.WAV"
                 os.remove(TRIMMED_LOC)
