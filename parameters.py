@@ -4,6 +4,7 @@ import math
 from shutil import copyfile, rmtree
 import subprocess
 
+cutamt = (1 / 36)
 
 def inputToOutputFilename(filename, suffix):
     dotIndex = filename.rfind(".")
@@ -112,6 +113,7 @@ def make_folders():
             pass
 
 clips_images = readfile(DATA_FILE)
+clips_all =  {k: v for k, v in clips_images.items()}
 clips_pictures = {k: v for k, v in clips_images.items() if v.isdigit()}
 clips_ben = {k: v for k, v in clips_images.items() if v == "--"}
 clips_bentoc = {k: v for k, v in clips_images.items() if v == "--" or v == "toc"}

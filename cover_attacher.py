@@ -22,6 +22,8 @@ def attachcovers(suffix, clips_cover, directory):
     except FileExistsError:
         pass
 
+    cutamt = (1/36)
+
     for key, value in clips_cover.items():
         filename = f"C0{key}{suffix}"
         cover = f"{value}_2"
@@ -36,8 +38,13 @@ def attachcovers(suffix, clips_cover, directory):
         subprocess.call(command, shell=True)
 
         # Matching video to audio duration and attach
-        wavlen = float(get_length(OUTPUT_WAV))
-        coverlen = float(get_length(coverloc))-(1/24)
+
+        layer3 = f"{OUTPUT_VIDEO_DIRECTORY2}{filename}"
+        wavlen = round(float(get_length(layer3))-(cutamt), 2)
+
+        # wavlen = float(get_length(OUTPUT_WAV))
+        coverlen = float(get_length(coverloc))
+
         ratio = (wavlen/coverlen)
         command = f'ffmpeg -i {coverloc} -i {OUTPUT_WAV} -filter_complex "[0:v]setpts=PTS*{str(ratio)}[v]" -map "[v]" -map 1:a -shortest {final_output} -hide_banner -loglevel error'
         subprocess.call(command, shell=True)
@@ -75,6 +82,9 @@ def attachsidecovers(suffix, clips_cover):
         coverbehindloc = f"{OUTPUT_COVER_DIRECTORY}{coverbehind}.MOV"
         coverforwardloc = f"{OUTPUT_COVER_DIRECTORY}{coverforward}.MOV"
 
+        middle_output_b2 = f"{OUTPUT_VIDEO_DIRECTORY3}C0{behindfilenum}_TRIMMED_1mid.MOV"
+        middle_output_f2 = f"{OUTPUT_VIDEO_DIRECTORY3}C0{forwardfilenum}_TRIMMED_1mid.MOV"
+
         final_output_b2 = f"{OUTPUT_VIDEO_DIRECTORY3}C0{behindfilenum}_TRIMMEDEMPTY_2.MOV"
         final_output_f2 = f"{OUTPUT_VIDEO_DIRECTORY3}C0{forwardfilenum}_TRIMMEDEMPTY_1.MOV"
 
@@ -94,11 +104,16 @@ def attachsidecovers(suffix, clips_cover):
         command = "ffmpeg -ignore_chapters 1 -i " + behindfileloc + " -vcodec qtrle -ss " + cut_point + " " + " -t 1 " + newbehindtransitionloc + " -hide_banner" + " -loglevel error"
         subprocess.call(command, shell=True)
 
-        middle_output_b2 = f"{OUTPUT_VIDEO_DIRECTORY3}C0{behindfilenum}_TRIMMEDEMPTY_2mid.MOV"
+
+        overlaycmd = \
+            ' -filter_complex "overlay=100:-1:format=auto" -c:v prores_ks -c:a copy '\
+            # " -filter_complex '[0]split[m][a];[m][a]alphamerge[keyed]; [1][keyed]overlay=eof_action=endall' "
+            # '-c:a copy -filter_complex "[0:v] overlay"'
+
 
         #make new transition with overlay
         command = f'ffmpeg -y -i {newbehindtransitionloc} -i {coverbehindloc} \
-         -c:a copy -filter_complex "[0:v] overlay" \
+        {overlaycmd} \
         {middle_output_b2} -hide_banner -loglevel error'
         subprocess.call(command, shell=True)
 
@@ -116,11 +131,11 @@ def attachsidecovers(suffix, clips_cover):
         except:
             FileNotFoundError
 
-        middle_output_f2 = f"{OUTPUT_VIDEO_DIRECTORY3}C0{forwardfilenum}_TRIMMED_1mid.MOV"
+
 
         #forward file
         command = f'ffmpeg -y -i {forwardfileloc}  -i {coverforwardloc} \
-         -c:a copy -filter_complex "[0:v] overlay" \
+        {overlaycmd} \
         {middle_output_f2} -hide_banner -loglevel error'
         subprocess.call(command, shell=True)
 
@@ -156,9 +171,8 @@ def attachsidecovers(suffix, clips_cover):
     shutil.rmtree(WAV_DIRECTORY)
 
 if __name__ == '__main__':
-    attachcovers(clips_cover)
-    attachsidecovers(clips_cover)
-
+    # attachcovers(clips_cover)
+    attachsidecovers("_TRIMMEDEMPTY.MOV", clips_cover)
 
 
 

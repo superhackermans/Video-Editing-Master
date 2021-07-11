@@ -19,9 +19,9 @@ clips_background = {k: v for k, v in clips_images.items() if v.isdigit()}
 clips_toc = {k: v for k, v in clips_images.items() if v == "toc"}
 
 if __name__ == '__main__':
-    make_folders()
-    trimmer()
-    frame_same("_TRIMMED", clips_all, OUTPUT_VIDEO_DIRECTORY)
+    # make_folders()
+    # trimmer()
+    frame_same("_TRIMMED.MP4", clips_all, OUTPUT_VIDEO_DIRECTORY)
     attachpictures(clips_pictures)
     splitcovers(INPUT_COVER_DIRECTORY)
     dup_dir(OUTPUT_VIDEO_DIRECTORY, OUTPUT_VIDEO_DIRECTORY2)

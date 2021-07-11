@@ -66,9 +66,9 @@ def add_transparency(suffix, clips, directory):
         # filelength = float(get_length(FINAL_OUTPUT))
 
         layer3 = f"{OUTPUT_VIDEO_DIRECTORY2}{filename}"
-        filelength2 = float(get_length(layer3))
+        filelength2 = round(float(get_length(layer3)), 2)
 
-        command = f"ffmpeg -ss -0 -i {FINAL_OUTPUT} -t {filelength2-(1/36)} -c copy {FINALFINAL_OUTPUT} -hide_banner -loglevel error"
+        command = f"ffmpeg -ss -0 -i {FINAL_OUTPUT} -t {filelength2-(cutamt)} -c copy {FINALFINAL_OUTPUT} -hide_banner -loglevel error"
         subprocess.call(command, shell=True)
 
         filelength = float(get_length(FINALFINAL_OUTPUT))
@@ -203,7 +203,7 @@ def replace_footage(suffix, clips_background, directory):
             # Cut last frame of video (audio is a little longer so ffmpeg adds a frame to the end of the snippet)
             # st()
             filelength = float(get_length(outputbgloc))
-            cutlength = (filelength - (1 / 30))
+            cutlength = (filelength - (cutamt))
             command = f"ffmpeg -ss -0 -i {outputbgloc} -t {cutlength} -c copy {outputbglocfinal} -hide_banner -loglevel error"
             subprocess.call(command, shell=True)
 
@@ -224,11 +224,11 @@ def replace_footage(suffix, clips_background, directory):
 
     try:
         shutil.rmtree(CUTCOVER)
-    except FileNotFoundError:
+    except (FileNotFoundError, UnboundLocalError) as e:
         pass
     try:
         shutil.rmtree(WAV_DIRECTORY)
-    except FileNotFoundError:
+    except (FileNotFoundError, UnboundLocalError) as e:
         pass
 
 if __name__ == "__main__":
