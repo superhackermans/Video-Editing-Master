@@ -92,7 +92,7 @@ def backgroundattacher(suffix, directory, bg_to_attach):
     except FileNotFoundError:
         pass
     try:
-        shutil.rmtree(WAV_DIRECTORY)
+        shutil.rmtree(wav_dir)
     except FileNotFoundError:
         pass
 

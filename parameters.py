@@ -1,89 +1,35 @@
 import os
-import numpy as np
-import math
 from shutil import copyfile, rmtree
 import subprocess
+import shutil
+import subprocess
+from shutil import copyfile, rmtree, copytree
+import os
+import os.path
+from pdb import set_trace as st
 
-cutamt = (1 / 36)
-
-def inputToOutputFilename(filename, suffix):
-    dotIndex = filename.rfind(".")
-    return filename[:dotIndex]+suffix+filename[dotIndex:]
-def inputToOutputFilename(filename):
-    dotIndex = filename.rfind(".")
-    return filename[:dotIndex]+"_TRIMMED"+filename[dotIndex:]
-def createPath(s):
-    try:
-        os.mkdir(s)
-    except OSError:
-        pass
-def deletePath(s): # Dangerous! Watch out!
-    try:
-        rmtree(s,ignore_errors=False)
-    except OSError:
-        print ("Deletion of the directory %s failed" % s)
-        print(OSError)
-def inputToOutputWAV(filename):
-    dotIndex = filename.rfind(".")
-    return filename[:dotIndex]+".WAV"
-def inputToOutputMOV(filename):
-    dotIndex = filename.rfind(".")
-    return filename[:dotIndex]+"_TRIMMED.MOV"
-def inputToOutputPNG(filename):
-    dotIndex = filename.rfind(".")
-    return filename[:dotIndex]+".png"
-def inputToOutputNewTrimmed(filename):
-    return "C0"+filename+"_TRIMMED.MP4"
-def inputToOutputNewWAV(filename):
-    return "C0"+filename+".WAV"
-def altElement(a):
-    return a[::2]
-def inputToOutputNewTrimmedAndZoomed(filename):
-    return "C0"+filename+"_TRIMMEDZOOMED.MP4"
-
-def readfile(file):
-    file = open(DATA_FILE)
-    clips = []
-    images = []
-    clips_images = {}
-
-    for line in file:
-        splitLine = line.split("\t")
-        clips.append(splitLine[0])
-        if len(splitLine[1]) > 9:
-            splitLine[1] = "--"
-        images.append(splitLine[1].strip())
-        images = [i.replace('Photo ', '') for i in images]
-    clips_images = dict(zip(clips, images))
-    file.close()
-
-    return clips_images
-
-def get_length(fileloc):
-    # filelength = float(get_length(fileloc))
-    # get length of a file
-    command = "ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 " + fileloc + " -hide_banner -loglevel error"
-    proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, )
-    filelength = proc.communicate()[0].decode('utf-8').strip('\n')
-    return filelength
+cutamttransparency = 0
+discrepancy_multiplier = 1
+cutamtbg = 0
+cutamtcover = 0
+decimals = 3
 
 #File locations
-DATA_FILE = "./files/data.txt"
-INPUT_VIDEO_DIRECTORY = "./files/INPUT/unprocessed_raw_files/"
-INPUT_COVER_DIRECTORY = "./files/INPUT/covers/"
-# INPUT_VIDEO_DIRECTORY = "/Users/danielko/Dropbox/YouTube/"
-PROCESSED_FILES_DIRECTORY = "./files/OUTPUT/processed_raw_files/"
-OUTPUT_VIDEO_DIRECTORY = "./files/OUTPUT/trimmed_files_2nd_layer/"
-OUTPUT_VIDEO_DIRECTORY2 = "./files/OUTPUT/trimmed_files_3rd_layer/"
-OUTPUT_VIDEO_DIRECTORY3 = "./files/OUTPUT/trimmed_files_1st_layer/"
-PICTURE_DIRECTORY = "./files/INPUT/pictures/"
-WAV_CONVERSION_FILES = "./files/OUTPUT/convert_to_wav/" #files with pictures to extract audio from
-OUTPUT_COVER_DIRECTORY = "./files/OUTPUT/coverssplit/"
-WAV_DIRECTORY = "./files/OUTPUT/wav_files/"
-PICTURE_OUTPUT_DIRECTORY = "./files/OUTPUT/pictures/"
-
+data_file = "./files/data.txt"
+vid_dir_in = "./files/INPUT/unprocessed_raw_files/"
+cov_dir_in = "./files/INPUT/covers/"
+vid_processed = "./files/OUTPUT/processed_raw_files/"
+layer1 = "./files/OUTPUT/trimmed_files_1st_layer/"
+layer2 = "./files/OUTPUT/trimmed_files_2nd_layer/"
+layer3 = "./files/OUTPUT/trimmed_files_3rd_layer/"
+pic_dir_in = "./files/INPUT/pictures/"
+wav_converting = "./files/OUTPUT/convert_to_wav/" #files with pictures to extract audio from
+cover_dir_out = "./files/OUTPUT/coverssplit/"
+wav_dir = "./files/OUTPUT/wav_files/"
+pic_dir_out = "./files/OUTPUT/pictures/"
 backgroundloc = "./assets/BORDER.mp4"
-TRANSPARENCY = "./assets/transparency.png"
+pic_transparency = "./assets/transparency.png"
+cover_cut = "./files/OUTPUT/cutcover/"
 
 #parameters
 frameRate = 24
@@ -103,24 +49,99 @@ original_dimensions = 3840, 2160
 scale_factor = .80
 raise_up = 500
 
+def createPath(s):
+    try:
+        os.mkdir(s)
+    except (FileExistsError, OSError) as e:
+        pass
+def deletePath(s):
+    try:
+        rmtree(s,ignore_errors=False)
+    except OSError:
+        print ("Deletion of the directory %s failed" % s)
+        print(OSError)
+def deleteFile(s):
+    try:
+        os.remove(s)
+    except FileNotFoundError:
+        pass
+def copy_directory(directory, newdirectory):
+    try:
+        shutil.copytree(directory, newdirectory)
+    except FileExistsError:
+        pass
+def renamefile(src, dest):
+    try:
+        os.rename(src, dest)
+    except OSError:
+        pass
+def inputToOutputFilename(filename, suffix):
+    dotIndex = filename.rfind(".")
+    return filename[:dotIndex]+suffix+filename[dotIndex:]
+def inputToOutputFilename(filename):
+    dotIndex = filename.rfind(".")
+    return filename[:dotIndex]+"_TRIMMED"+filename[dotIndex:]
+def inputToOutputWAV(filename):
+    dotIndex = filename.rfind(".")
+    return filename[:dotIndex]+".WAV"
+def inputToOutputMOV(filename):
+    dotIndex = filename.rfind(".")
+    return filename[:dotIndex]+"_TRIMMED.MOV"
+def inputToOutputPNG(filename):
+    dotIndex = filename.rfind(".")
+    return filename[:dotIndex]+".png"
+def inputToOutputNewTrimmed(filename):
+    return "C0"+filename+"_TRIMMED.MP4"
+def inputToOutputNewWAV(filename):
+    return "C0"+filename+".WAV"
+def altElement(a):
+    return a[::2]
+def inputToOutputNewTrimmedAndZoomed(filename):
+    return "C0"+filename+"_TRIMMEDZOOMED.MP4"
+
+def readfile(file):
+    file = open(data_file)
+    clips = []
+    images = []
+    clips_images = {}
+
+    for line in file:
+        splitLine = line.split("\t")
+        clips.append(splitLine[0])
+        if len(splitLine[1]) > 9:
+            splitLine[1] = "--"
+        images.append(splitLine[1].strip())
+        images = [i.replace('Photo ', '') for i in images]
+    clips_images = dict(zip(clips, images))
+    file.close()
+
+    return clips_images
+def get_length(fileloc):
+    # filelength = float(get_length(fileloc))
+    # get length of a file
+    command = "ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 " + fileloc + " -hide_banner -loglevel error"
+    proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, )
+    filelength = proc.communicate()[0].decode('utf-8').strip('\n')
+    return filelength
+
 #make directories if not there
 def make_folders():
-    directories = [INPUT_VIDEO_DIRECTORY, PICTURE_DIRECTORY, INPUT_COVER_DIRECTORY, DATA_FILE, OUTPUT_VIDEO_DIRECTORY, WAV_CONVERSION_FILES, OUTPUT_COVER_DIRECTORY, OUTPUT_VIDEO_DIRECTORY]
+    directories = [vid_dir_in, pic_dir_in, cov_dir_in, data_file, layer2, wav_converting, cover_dir_out, layer2]
     for directory in directories:
         try:
             os.mkdir(directory)
         except FileExistsError:
             pass
 
-clips_images = readfile(DATA_FILE)
-clips_all =  {k: v for k, v in clips_images.items()}
+clips_images = readfile(data_file)
+clips_all = {k: v for k, v in clips_images.items()}
 clips_pictures = {k: v for k, v in clips_images.items() if v.isdigit()}
 clips_ben = {k: v for k, v in clips_images.items() if v == "--"}
 clips_bentoc = {k: v for k, v in clips_images.items() if v == "--" or v == "toc"}
 clips_cover = {k: v for k, v in clips_images.items() if v == "c1" or v == "c2" or v == "c3"
                or v == "c4" or v == "c5" or v == "c6"
                or v == "c7" or v == "c8" or v == "c9"}
-clips_background = {k: v for k, v in clips_images.items() if v.isdigit()}
+clips_background = {k: v for k, v in clips_images.items() if v.isdigit() or v == "toc"} # includes table of contents
 clips_toc = {k: v for k, v in clips_images.items() if v == "toc"}
 
 if __name__ == "__main__":

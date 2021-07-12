@@ -28,7 +28,7 @@ def trimmer():
     # turn filenames in list
     myVideos = []
     print("Processing: ")
-    for file in os.listdir(INPUT_VIDEO_DIRECTORY):
+    for file in os.listdir(vid_dir_in):
         if file.endswith(".MP4") or file.endswith(".mp4"):
             myVideos.append(file)
     if not myVideos:
@@ -41,7 +41,7 @@ def trimmer():
 
 
     try:
-        os.mkdir(PROCESSED_FILES_DIRECTORY)
+        os.mkdir(vid_processed)
     except FileExistsError:
         pass
     WAV_DIRECTORY = "./files/OUTPUT/wav_files/"
@@ -53,9 +53,9 @@ def trimmer():
     #Trim and delete mistakes
     for video_name in myVideos:
         print(f'Beginning Trimming for {video_name}')
-        INPUT_FILE = f"{INPUT_VIDEO_DIRECTORY}{video_name}"
+        INPUT_FILE = f"{vid_dir_in}{video_name}"
         assert INPUT_FILE != None , "No Input File Detected"
-        OUTPUT_FILE = f"{OUTPUT_VIDEO_DIRECTORY}{inputToOutputFilename(video_name)}"
+        OUTPUT_FILE = f"{layer2}{inputToOutputFilename(video_name)}"
 
         TEMP_FOLDER = "TEMP"
         createPath(TEMP_FOLDER)
@@ -227,8 +227,8 @@ def trimmer():
         shutil.rmtree(TEMP_FOLDER)
 
         #move file to processed_raw_files folder
-        source_dir = INPUT_VIDEO_DIRECTORY
-        target_dir = PROCESSED_FILES_DIRECTORY
+        source_dir = vid_dir_in
+        target_dir = vid_processed
 
         shutil.move(os.path.join(source_dir, video_name), target_dir)
 
@@ -236,8 +236,8 @@ def trimmer():
 
     for video_name in myVideos:
 
-        target_dir = INPUT_VIDEO_DIRECTORY
-        source_dir = PROCESSED_FILES_DIRECTORY
+        target_dir = vid_dir_in
+        source_dir = vid_processed
 
         shutil.move(os.path.join(source_dir, video_name), target_dir)
 

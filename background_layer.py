@@ -1,21 +1,7 @@
 from parameters import *
-import subprocess
-from shutil import copyfile, rmtree, copytree
-import os
-from pdb import set_trace as st
 import numpy as np
-import shutil
 from backgroundattacher import *
 import os.path
-
-
-clips_images = readfile(DATA_FILE)
-clips_ben = {k: v for k, v in clips_images.items() if v == "--"}
-clips_cover = {k: v for k, v in clips_images.items() if v == "c1" or v == "c2" or v == "c3"
-               or v == "c4" or v == "c5" or v == "c6"
-               or v == "c7" or v == "c8" or v == "c9"}
-clips_background = {k: v for k, v in clips_images.items() if v.isdigit()}
-clips_toc = {k: v for k, v in clips_images.items() if v == "toc"}
 
 #duplicate file
 def dup_dir(directory, directory2):
@@ -36,12 +22,10 @@ def group_consecutives(vals, step=1):
             result.append(run)
         expect = v + step
     return result
+
 def add_transparency(suffix, clips, directory):
     # print("Adding transparency to top layer files (OUTPUT/trimmed_files/)")
-    try:
-        os.mkdir(WAV_DIRECTORY)
-    except FileExistsError:
-        pass
+    createPath(wav_dir)
 
     # TOP LAYER (trimmed_files)
     # ben clips and TOC become transparent
@@ -49,9 +33,9 @@ def add_transparency(suffix, clips, directory):
         filename = f"C0{k}{suffix}"
         print(f"Adding transparency to {filename}")
         INPUT_TRIMMED_FILE = f"{directory}{filename}"
-        OUTPUT_WAV = f"{WAV_DIRECTORY}{inputToOutputNewWAV(k)}"
-        FINAL_OUTPUT = f"{directory}C0{k}_TRIMMEDEMPTY0.MOV"
-        FINALFINAL_OUTPUT = f"{directory}C0{k}_TRIMMEDEMPTY.MOV"
+        OUTPUT_WAV = f"{wav_dir}{inputToOutputNewWAV(k)}"
+        FINAL_OUTPUT = f"{directory}C0{k}_TRIMMEDEMPTY.MOV"
+        # FINALFINAL_OUTPUT = f"{directory}C0{k}_TRIMMEDEMPTY.MOV"
         # command = f'ffmpeg -i {INPUT_TRIMMED_FILE} -i {TRANSPARENCY} -c:a copy {FINAL_OUTPUT}'
         # subprocess.call(command, shell=True)
 
@@ -60,81 +44,59 @@ def add_transparency(suffix, clips, directory):
         subprocess.call(command, shell=True)
 
         # attach audio wav to transparent image
-        command = "ffmpeg -loop 1 -y -i " + TRANSPARENCY + " -i " + OUTPUT_WAV + " -shortest -acodec copy -vcodec png " + " -hide_banner -loglevel error " + FINAL_OUTPUT
+        command = "ffmpeg -loop 1 -y -i " + pic_transparency + " -i " + OUTPUT_WAV + " -shortest -acodec copy -vcodec png " + " -hide_banner -loglevel error " + FINAL_OUTPUT
         subprocess.call(command, shell=True)
 
         # filelength = float(get_length(FINAL_OUTPUT))
 
-        layer3 = f"{OUTPUT_VIDEO_DIRECTORY2}{filename}"
-        filelength2 = round(float(get_length(layer3)), 2)
+        layer3 = f"{layer3}{filename}"
+        layer3len = round(float(get_length(layer3)), decimals)
+        # print(f"Layer 3 filelength is {filelength2}")
 
-        command = f"ffmpeg -ss -0 -i {FINAL_OUTPUT} -t {filelength2-(cutamt)} -c copy {FINALFINAL_OUTPUT} -hide_banner -loglevel error"
-        subprocess.call(command, shell=True)
+        # command = f"ffmpeg -ss -0 -i {FINAL_OUTPUT} -t {filelength2} -c copy {FINALFINAL_OUTPUT} -hide_banner -loglevel error"
+        # subprocess.call(command, shell=True)
 
-        filelength = float(get_length(FINALFINAL_OUTPUT))
+        filelength = float(get_length(FINAL_OUTPUT))
+        discrepancy = (filelength - layer3len) * discrepancy_multiplier
 
-        print(f"filelength of C0{k}_TRIMMEDEMPTY.MOV is {filelength}")
-        print(f"filelength of C0{k}_TRIMMED.MP4 layer 3 clip is {filelength2}")
-        print(f"The discrepancy is {filelength-filelength2}")
+        # if discrepancy >= 0:
+        #     print(f"Trimming by {discrepancy}")
+        #     command = f"ffmpeg -ss -0 -i {FINAL_OUTPUT} -t {layer3len-(discrepancy)}" \
+        #               f" -c:v libx264 -strict -2 " \
+        #               f" {FINALFINAL_OUTPUT} -hide_banner -loglevel error"
+        #     subprocess.call(command, shell=True)
+        # else:
+        #     print("nothing cut")
+        #     command = f"ffmpeg -ss -0 -i {FINAL_OUTPUT} -t {layer3len} " \
+        #               f" -c:v libx264 -strict -2 " \
+        #               f" {FINALFINAL_OUTPUT} -hide_banner -loglevel error"
+        #     subprocess.call(command, shell=True)
+
+        # renamefile(FINAL_OUTPUT, FINALFINAL_OUTPUT)
+
+        filelength = float(get_length(FINAL_OUTPUT))
+
+        if filelength-layer3len == 0:
+            print("There is no discrepancy between lengths of original clip and new clip.")
+        else:
+            print(f"filelength of C0{k}_TRIMMEDEMPTY.MOV is {filelength}")
+            print(f"filelength of C0{k}_TRIMMED.MP4 layer 3 clip is {layer3len}")
+            print(f"The discrepancy is {filelength - layer3len}")
 
         #remove old file
-        try:
-            os.remove(INPUT_TRIMMED_FILE)
-        except FileNotFoundError:
-            pass
-        try:
-            os.remove(FINAL_OUTPUT)
-        except FileNotFoundError:
-            pass
+        deleteFile(INPUT_TRIMMED_FILE)
+        # deleteFile(FINAL_OUTPUT)
 
-    shutil.rmtree(WAV_DIRECTORY)
+    # deletePath(WAV_DIRECTORY)
 
         #resize video clips by .88 with alpha border
 
-# def length_discrepancy(file1, file2):
-#     maxdiscrepancy = (1/24)/2
-#     # child
-#     filelen1 = float(get_length(file1))
-#     # parent
-#     filelen2 = float(get_length(file2))
-#     # if difference is larger than maxdiscrepancy, cut 1 frame from the filelen1
-#     output = inputToOutputFilename(file1, "_TRIMMED1")
-#     if filelen1-filelen2 > maxdiscrepancy:
-#         command = f"ffmpeg -ss -0 -i {file1} -t {filelen1-1/36} -c copy {output} -hide_banner -loglevel error"
-#         subprocess.call(command, shell=True)
-#     else:
-#         pass
-
 def replace_footage(suffix, clips_background, directory):
 
-    # BOTTOM LAYER (trimmed_files_dup)
-
-    #find consecutive clips
-    # clips_background = {int(k):v for k, v in clips_background.items()}
-    # clips_concat = {}
-    # clips_solo = {}
-    # for k, v in clips_background.items():
-    #     if k - 1 in clips_background:
-    #         clips_concat.update({k:int(v)})
-    #     elif k + 1 in clips_background:
-    #         clips_concat.update({k:int(v)})
-    #     else:
-    #         clips_solo.update({str(k):v})
-
-    # st()
-    # attach solo clips
-    # if bool(clips_solo) == True:
-    #     try: backgroundattacher("_TRIMMED.MOV", directory, clips_solo)
-    #     except: pass
-    # else:
-    #     pass
-    #
-    # if bool(clips_toc) == True:
-    #     try: backgroundattacher("_TRIMMED.MP4", directory, clips_toc)
-    #     except: pass
-    # else:
-    #     pass
-
+    # turning toc string into random integer... code doesnt work with strings so this is a simple workaround bc values dont even matter here
+    for k, v in clips_background.items():
+        if v == "toc":
+            clips_background[k] = "100"
     clips_background = {int(k):int(v) for k, v in clips_background.items()}
 
     # connect consecutive clips
@@ -144,6 +106,9 @@ def replace_footage(suffix, clips_background, directory):
         consecutive_clips = group_consecutives(arr[:, 0])
 
         for group in consecutive_clips:
+            createPath(cover_cut)
+            createPath(wav_dir)
+
             text_file = 'concat_clips.txt'
             with open(text_file, 'w') as fp:
                 pass
@@ -166,31 +131,22 @@ def replace_footage(suffix, clips_background, directory):
             subprocess.call(command, shell=True)
 
             # attach background
-            CUTCOVER = "./files/OUTPUT/cutcover/"
-            try:
-                os.mkdir(CUTCOVER)
-            except FileExistsError:
-                pass
-            WAV_DIRECTORY = "./files/OUTPUT/wav_files/"
-            try:
-                os.mkdir(WAV_DIRECTORY)
-            except FileExistsError:
-                pass
-
             print(f"Attaching background to {outputfilename}.MP4")
 
             filelength = float(get_length(outputnobgloc))
             # Cut cover to match audio duration
-            output_cover = f"{CUTCOVER}{outputfilename}.MP4"
-            command = f"ffmpeg -ss -0 -i {backgroundloc} -t {filelength} -c copy {output_cover} -hide_banner -loglevel error"
+            output_cover = f"{cover_cut}{outputfilename}.MP4"
+            command = f"ffmpeg -ss -0 -i {backgroundloc} -t {filelength} " \
+                      f" -c:v libx264 -strict -2 " \
+                      f" {output_cover} -hide_banner -loglevel error"
             subprocess.call(command, shell=True)
 
             # # overlay cut cover onto video
             # command = f'ffmpeg -i {outputnobgloc} -i {output_cover} -c:a copy -filter_complex "[0:v] overlay" {outputbg} -hide_banner -loglevel error'
             # subprocess.call(command, shell=True)
 
-            OUTPUT_WAV = f"{WAV_DIRECTORY}{outputfilename}.WAV"
-            # st()
+            OUTPUT_WAV = f"{wav_dir}{outputfilename}.WAV"
+
             # convert no bg to WAV
             command = f"ffmpeg -i {outputnobgloc} -vn -acodec copy {OUTPUT_WAV} -hide_banner -loglevel error"
             subprocess.call(command, shell=True)
@@ -201,37 +157,34 @@ def replace_footage(suffix, clips_background, directory):
 
             # Cut last frame of video (audio is a little longer so ffmpeg adds a frame to the end of the snippet)
             # st()
-            filelength = float(get_length(outputbgloc))
-            cutlength = (filelength - (cutamt))
-            command = f"ffmpeg -ss -0 -i {outputbgloc} -t {cutlength} -c copy {outputbglocfinal} -hide_banner -loglevel error"
-            subprocess.call(command, shell=True)
+            # filelength = float(get_length(outputbgloc))
+            # cutlength = (filelength - (cutamtbg))
+            # command = f"ffmpeg -ss -0 -i {outputbgloc} -t {cutlength}" \
+            #           f" -c:v libx264 -strict -2 " \
+            #           f"{outputbglocfinal} -hide_banner -loglevel error"
+            # subprocess.call(command, shell=True)
 
-            os.remove(outputnobgloc)
-            os.remove(outputbgloc)
+            renamefile(outputbgloc, outputbglocfinal)
+
+            deleteFile(outputnobgloc)
 
             for j in group:
                 TRIMMED_LOC = f"{directory}C0{j}{suffix}"
                 # WAV_LOC = f"{directory}C0{j}_TRIMMED.WAV"
-                os.remove(TRIMMED_LOC)
+                deleteFile(TRIMMED_LOC)
 
-            os.remove(text_file)
+            deleteFile(text_file)
 
         # add blue background to concatenated files
 
     else:
         pass
 
-    try:
-        shutil.rmtree(CUTCOVER)
-    except (FileNotFoundError, UnboundLocalError) as e:
-        pass
-    try:
-        shutil.rmtree(WAV_DIRECTORY)
-    except (FileNotFoundError, UnboundLocalError) as e:
-        pass
+    deletePath(cover_cut)
+    deletePath(wav_dir)
 
 if __name__ == "__main__":
     # dup_dir(OUTPUT_VIDEO_DIRECTORY, directory)
     # add_transparency("_TRIMMED.MP4", clips_ben)
     # add_transparency("_TRIMMEDCOVER.MP4", clips_cover)
-    replace_footage(clips_background)
+    replace_footage("_TRIMMED.MOV", clips_background, layer3)

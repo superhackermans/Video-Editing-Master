@@ -30,9 +30,9 @@ def splitcovers(directory):
         print(cover)
         INPUT_COVER = f"{directory}{cover}"
         assert INPUT_COVER != None , "No Input File Detected"
-        OUTPUT_COVER1 = f"{OUTPUT_COVER_DIRECTORY}{inputToOutputFilenameBEG(cover)}"
-        OUTPUT_COVER2 = f"{OUTPUT_COVER_DIRECTORY}{inputToOutputFilenameMID(cover)}"
-        OUTPUT_COVER3 = f"{OUTPUT_COVER_DIRECTORY}{inputToOutputFilenameEND(cover)}"
+        OUTPUT_COVER1 = f"{cover_dir_out}{inputToOutputFilenameBEG(cover)}"
+        OUTPUT_COVER2 = f"{cover_dir_out}{inputToOutputFilenameMID(cover)}"
+        OUTPUT_COVER3 = f"{cover_dir_out}{inputToOutputFilenameEND(cover)}"
 
         #-ss 0 -t 1 are start and length, respectively
         command = "ffmpeg -ignore_chapters 1 -i " + INPUT_COVER + " -vcodec qtrle -ss 0 -t 1 " + OUTPUT_COVER1 + " -hide_banner" + " -loglevel error"
@@ -45,4 +45,4 @@ def splitcovers(directory):
         subprocess.call(command, shell=True)
 
 if __name__ == '__main__':
-    splitcovers(directory)
+    splitcovers(cov_dir_in)
