@@ -27,9 +27,20 @@ wav_converting = "./files/OUTPUT/convert_to_wav/" #files with pictures to extrac
 cover_dir_out = "./files/OUTPUT/coverssplit/"
 wav_dir = "./files/OUTPUT/wav_files/"
 pic_dir_out = "./files/OUTPUT/pictures/"
+cover_cut = "./files/OUTPUT/cutcover/"
+output_main = "./files/OUTPUT"
+
+backuplayer = "./files/OUTPUT/backup_layer/"
+
+# asset file locations
+in_1 = "./assets/in_1.mov"
+in_2 = "./assets/in_2.mov"
+out_1 = "./assets/out_1.mov"
+out_2 = "./assets/out_2.mov"
+trans_in = "./assets/in.MOV"
+trans_out = "./assets/out.MOV"
 backgroundloc = "./assets/BORDER.mp4"
 pic_transparency = "./assets/transparency.png"
-cover_cut = "./files/OUTPUT/cutcover/"
 
 #parameters
 frameRate = 24
@@ -75,9 +86,14 @@ def renamefile(src, dest):
         os.rename(src, dest)
     except OSError:
         pass
-def inputToOutputFilename(filename, suffix):
-    dotIndex = filename.rfind(".")
-    return filename[:dotIndex]+suffix+filename[dotIndex:]
+def move_file(src, filename, dest):
+    try:
+        shutil.move(os.path.join(src, filename), dest)
+    except:
+        pass
+# def inputToOutputFilename(filename, suffix):
+#     dotIndex = filename.rfind(".")
+#     return filename[:dotIndex]+suffix+filename[dotIndex:]
 def inputToOutputFilename(filename):
     dotIndex = filename.rfind(".")
     return filename[:dotIndex]+"_TRIMMED"+filename[dotIndex:]
@@ -98,6 +114,13 @@ def altElement(a):
     return a[::2]
 def inputToOutputNewTrimmedAndZoomed(filename):
     return "C0"+filename+"_TRIMMEDZOOMED.MP4"
+def convert(suffix, filetype, newfiletype, clips, directory):
+    for k,v in clips.items():
+        input = f"{directory}C0{k}{suffix}{filetype}"
+        output = f"{directory}C0{k}{suffix}{newfiletype}"
+        command = f"ffmpeg -i {input} -hide_banner {output} -loglevel error"
+        subprocess.call(command, shell=True)
+        deleteFile(input)
 
 def readfile(file):
     file = open(data_file)
@@ -126,7 +149,7 @@ def get_length(fileloc):
 
 #make directories if not there
 def make_folders():
-    directories = [vid_dir_in, pic_dir_in, cov_dir_in, data_file, layer2, wav_converting, cover_dir_out, layer2]
+    directories = [output_main, vid_dir_in, pic_dir_in, cov_dir_in, data_file, wav_converting, cover_dir_out, layer2]
     for directory in directories:
         try:
             os.mkdir(directory)
@@ -140,7 +163,8 @@ clips_ben = {k: v for k, v in clips_images.items() if v == "--"}
 clips_bentoc = {k: v for k, v in clips_images.items() if v == "--" or v == "toc"}
 clips_cover = {k: v for k, v in clips_images.items() if v == "c1" or v == "c2" or v == "c3"
                or v == "c4" or v == "c5" or v == "c6"
-               or v == "c7" or v == "c8" or v == "c9"}
+               or v == "c7" or v == "c8" or v == "c9"
+               or v == "c10" or v == "c11" or v == "c12"}
 clips_background = {k: v for k, v in clips_images.items() if v.isdigit() or v == "toc"} # includes table of contents
 clips_toc = {k: v for k, v in clips_images.items() if v == "toc"}
 

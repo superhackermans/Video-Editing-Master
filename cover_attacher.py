@@ -35,7 +35,7 @@ def attachcovers(suffix, clips_cover, directory):
 
         # Matching video to audio duration and attach
 
-        layer3 = f"{layer3}{filename}"
+        # layer3 = f"{layer3}{filename}"
         # wavlen = round(float(get_length(layer3))-(cutamtcover), decimals)
         wavlen = float(get_length(OUTPUT_WAV))
         coverlen = float(get_length(coverloc))
@@ -99,11 +99,13 @@ def attachsidecovers(suffix, clips_cover, directory):
         #cut off 1 s section at the very end of behind clip
         if os.path.isfile(behindfileloc) == True:
             cut_point = str(float(get_length(behindfileloc))-1)
-            command = "ffmpeg -ignore_chapters 1 -i " + behindfileloc + " -vcodec qtrle -ss 0 -t " + cut_point + " " + newbehindfileloc + " -hide_banner -loglevel error"
+            command = f"ffmpeg -ignore_chapters 1 -i {behindfileloc} -vcodec qtrle -ss 0 -t {cut_point} {newbehindfileloc} -hide_banner -loglevel error"
+                      # f" -c:v libx264 -strict -2 " \
             subprocess.call(command, shell=True)
         if os.path.isfile(forwardfileloc) == True:
             cut_point = str(float(get_length(forwardfileloc))-1)
-            command = "ffmpeg -ignore_chapters 1 -i " + forwardfileloc + " -vcodec qtrle -ss 1 -t " + cut_point + " " + newfowardfileloc + " -hide_banner -loglevel error"
+            command = f"ffmpeg -ignore_chapters 1 -i {forwardfileloc} -vcodec qtrle -ss 1 -t {cut_point} {newfowardfileloc} -hide_banner -loglevel error"
+                      # f" -c:v libx264 -strict -2 " \
             subprocess.call(command, shell=True)
 
         # fwd clip

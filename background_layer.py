@@ -23,7 +23,7 @@ def group_consecutives(vals, step=1):
         expect = v + step
     return result
 
-def add_transparency(suffix, clips, directory):
+def add_transparency(suffix, newsuffix, clips, directory):
     # print("Adding transparency to top layer files (OUTPUT/trimmed_files/)")
     createPath(wav_dir)
 
@@ -34,7 +34,8 @@ def add_transparency(suffix, clips, directory):
         print(f"Adding transparency to {filename}")
         INPUT_TRIMMED_FILE = f"{directory}{filename}"
         OUTPUT_WAV = f"{wav_dir}{inputToOutputNewWAV(k)}"
-        FINAL_OUTPUT = f"{directory}C0{k}_TRIMMEDEMPTY.MOV"
+        FINAL_OUTPUT = f"{directory}C0TEMP{k}{newsuffix}"
+        FINALFINAL_OUTPUT = f"{directory}C0{k}{newsuffix}"
         # FINALFINAL_OUTPUT = f"{directory}C0{k}_TRIMMEDEMPTY.MOV"
         # command = f'ffmpeg -i {INPUT_TRIMMED_FILE} -i {TRANSPARENCY} -c:a copy {FINAL_OUTPUT}'
         # subprocess.call(command, shell=True)
@@ -47,17 +48,20 @@ def add_transparency(suffix, clips, directory):
         command = "ffmpeg -loop 1 -y -i " + pic_transparency + " -i " + OUTPUT_WAV + " -shortest -acodec copy -vcodec png " + " -hide_banner -loglevel error " + FINAL_OUTPUT
         subprocess.call(command, shell=True)
 
+        deleteFile(INPUT_TRIMMED_FILE)
+        renamefile(FINAL_OUTPUT, FINALFINAL_OUTPUT)
+
         # filelength = float(get_length(FINAL_OUTPUT))
 
-        layer3 = f"{layer3}{filename}"
-        layer3len = round(float(get_length(layer3)), decimals)
+        # layer3 = f"{layer3}{filename}"
+        # layer3len = round(float(get_length(layer3)), decimals)
         # print(f"Layer 3 filelength is {filelength2}")
 
         # command = f"ffmpeg -ss -0 -i {FINAL_OUTPUT} -t {filelength2} -c copy {FINALFINAL_OUTPUT} -hide_banner -loglevel error"
         # subprocess.call(command, shell=True)
 
-        filelength = float(get_length(FINAL_OUTPUT))
-        discrepancy = (filelength - layer3len) * discrepancy_multiplier
+        # filelength = float(get_length(FINAL_OUTPUT))
+        # discrepancy = (filelength - layer3len) * discrepancy_multiplier
 
         # if discrepancy >= 0:
         #     print(f"Trimming by {discrepancy}")
@@ -74,24 +78,24 @@ def add_transparency(suffix, clips, directory):
 
         # renamefile(FINAL_OUTPUT, FINALFINAL_OUTPUT)
 
-        filelength = float(get_length(FINAL_OUTPUT))
+        # filelength = float(get_length(FINAL_OUTPUT))
 
-        if filelength-layer3len == 0:
-            print("There is no discrepancy between lengths of original clip and new clip.")
-        else:
-            print(f"filelength of C0{k}_TRIMMEDEMPTY.MOV is {filelength}")
-            print(f"filelength of C0{k}_TRIMMED.MP4 layer 3 clip is {layer3len}")
-            print(f"The discrepancy is {filelength - layer3len}")
+        # if filelength-layer3len == 0:
+        #     print("There is no discrepancy between lengths of original clip and new clip.")
+        # else:
+        #     print(f"filelength of C0{k}_TRIMMEDEMPTY.MOV is {filelength}")
+        #     print(f"filelength of C0{k}_TRIMMED.MP4 layer 3 clip is {layer3len}")
+        #     print(f"The discrepancy is {filelength - layer3len}")
 
         #remove old file
-        deleteFile(INPUT_TRIMMED_FILE)
+
         # deleteFile(FINAL_OUTPUT)
 
     # deletePath(WAV_DIRECTORY)
 
         #resize video clips by .88 with alpha border
 
-def replace_footage(suffix, clips_background, directory):
+def replace_footage(suffix, clips_background, directory, replacement_footage):
 
     # turning toc string into random integer... code doesnt work with strings so this is a simple workaround bc values dont even matter here
     for k, v in clips_background.items():
@@ -136,7 +140,7 @@ def replace_footage(suffix, clips_background, directory):
             filelength = float(get_length(outputnobgloc))
             # Cut cover to match audio duration
             output_cover = f"{cover_cut}{outputfilename}.MP4"
-            command = f"ffmpeg -ss -0 -i {backgroundloc} -t {filelength} " \
+            command = f"ffmpeg -ss -0 -i {replacement_footage} -t {filelength} " \
                       f" -c:v libx264 -strict -2 " \
                       f" {output_cover} -hide_banner -loglevel error"
             subprocess.call(command, shell=True)
@@ -187,4 +191,4 @@ if __name__ == "__main__":
     # dup_dir(OUTPUT_VIDEO_DIRECTORY, directory)
     # add_transparency("_TRIMMED.MP4", clips_ben)
     # add_transparency("_TRIMMEDCOVER.MP4", clips_cover)
-    replace_footage("_TRIMMED.MOV", clips_background, layer3)
+    replace_footage("_TRIMMED.MOV", clips_background, layer3, backgroundloc)

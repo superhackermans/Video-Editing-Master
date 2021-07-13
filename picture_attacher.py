@@ -38,10 +38,8 @@ def attachpictures(clips_pictures):
         INPUT_TRIMMED_FILE = f"{wav_converting}{inputToOutputNewTrimmed(trimmed_video)}"
         OUTPUT_WAV = f"{wav_dir}{inputToOutputNewWAV(trimmed_video)}"
         #convert trimmed mp4 into WAV
-        command = "ffmpeg -i " + INPUT_TRIMMED_FILE + " -hide_banner " + OUTPUT_WAV + " -loglevel error"
+        command = f"ffmpeg -i  {INPUT_TRIMMED_FILE} -hide_banner {OUTPUT_WAV} -loglevel error"
         subprocess.call(command, shell=True)
-
-
 
     myJPEG = []
     for file in os.listdir(pic_dir_in):
@@ -98,7 +96,7 @@ def attachpictures(clips_pictures):
         INPUT_IMAGE = f"{pic_dir_in}{inputToOutputPNG(file)}"
         OUTPUT_MOV = f"{layer2}{inputToOutputMOV(file)}"
         #combine wav and png to mp4
-        command = "ffmpeg -loop 1 -y -i " + INPUT_IMAGE + " -i " + INPUT_WAV + " -shortest -acodec copy -vcodec png " + " -hide_banner -loglevel error " + OUTPUT_MOV
+        command = f"ffmpeg -loop 1 -y -i {INPUT_IMAGE} -i {INPUT_WAV} -shortest -acodec copy -vcodec png {OUTPUT_MOV} -hide_banner -loglevel error "
         subprocess.call(command, shell=True)
 
     deletePath(wav_dir)
