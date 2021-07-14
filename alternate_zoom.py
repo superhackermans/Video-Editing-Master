@@ -2,16 +2,13 @@ from parameters import *
 import subprocess
 import shutil
 
-clips_images = readfile(data_file)
-clips_ben = {k: v for k, v in clips_images.items() if v == "--"}
-
 def altzoom(suffix, clips, directory):
     #zoom in alternating
 
     clips = list(clips.keys())
 
     alterClips = altElement(clips)
-    alterClips = sorted(alterClips[1:])
+    alterClips = sorted(alterClips[1:-2])
 
     TEMP_FOLDER = "./files/OUTPUT/alterClips/"
     createPath(TEMP_FOLDER)
@@ -25,7 +22,7 @@ def altzoom(suffix, clips, directory):
 
 
     source_dir = directory
-    target_dir= TEMP_FOLDER
+    target_dir = TEMP_FOLDER
 
     for clip in alterClips:
         filename = f"C0{clip}{suffix}"
@@ -36,11 +33,12 @@ def altzoom(suffix, clips, directory):
 
     #extract WAV audio from trimmed videos
     for clip in alterClips:
-        print(f"Zooming in clip {clip}")
+        filename = f"C0{clip}{suffix}"
+        print(f"Zooming in {filename}")
         INPUT_TRIMMED_FILE = f"{TEMP_FOLDER}{inputToOutputNewTrimmed(clip)}"
         OUTPUT_ZOOMED = f"{directory}{inputToOutputNewTrimmedAndZoomed(clip)}"
         #convert trimmed mp4 into WAV
-        command = 'ffmpeg -i ' + INPUT_TRIMMED_FILE + ' -filter:v ' + zoomcommand + ' -c:a copy ' + OUTPUT_ZOOMED + ' -hide_banner -loglevel error'
+        command = f'ffmpeg -i {INPUT_TRIMMED_FILE} -filter:v {zoomcommand} -c:a copy {OUTPUT_ZOOMED} -hide_banner -loglevel error'
         subprocess.call(command, shell=True)
 
     shutil.rmtree(TEMP_FOLDER)

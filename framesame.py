@@ -11,9 +11,9 @@ def frame_same(suffix, clips, directory):
 
     for k, v in dict(clips).items():
 
-        INPUTCLIP = f"{directory}C0{k}{suffix}"
-        MIDDLE_OUTPUT = f"{directory}C0{k}TEMP{suffix}"
-        FINAL_OUTPUT = f"{directory}C0{k}{suffix}"
+        INPUTCLIP = f"{directory}{cam_pre}{k}{suffix}"
+        MIDDLE_OUTPUT = f"{directory}{cam_pre}{k}TEMP{suffix}"
+        FINAL_OUTPUT = f"{directory}{cam_pre}{k}{suffix}"
 
         filelen = round(float(get_length(INPUTCLIP)), decimals)
 

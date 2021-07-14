@@ -20,9 +20,9 @@ def transitions(suffix, clips_background, directory):
 
         for group in consecutive_clips:
             if group[0] == group[-1]:
-                workingfiles = f"C0{group[0]}"
+                workingfiles = f"C0{group[0]}{suffix}"
             else:
-                workingfiles = f"C0{group[0]}-C0{group[-1]}"
+                workingfiles = f"C0{group[0]}{suffix} to C0{group[-1]}{suffix}"
 
             print(f"Attaching transitions to {workingfiles}")
 

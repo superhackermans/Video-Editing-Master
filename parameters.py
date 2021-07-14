@@ -11,8 +11,11 @@ from pdb import set_trace as st
 cutamttransparency = 0
 discrepancy_multiplier = 1
 cutamtbg = 0
-cutamtcover = 0
+addamtcover = 1/48
 decimals = 3
+
+# camera prefix
+cam_pre = "C0"
 
 #File locations
 data_file = "./files/data.txt"

@@ -41,7 +41,7 @@ def add_transparency(suffix, newsuffix, clips, directory):
         # subprocess.call(command, shell=True)
 
         # extract audio
-        command = "ffmpeg -i " + INPUT_TRIMMED_FILE + " -hide_banner " + OUTPUT_WAV + " -loglevel error"
+        command = f"ffmpeg -i {INPUT_TRIMMED_FILE} -hide_banner {OUTPUT_WAV} -loglevel error"
         subprocess.call(command, shell=True)
 
         # attach audio wav to transparent image
@@ -51,49 +51,6 @@ def add_transparency(suffix, newsuffix, clips, directory):
         deleteFile(INPUT_TRIMMED_FILE)
         renamefile(FINAL_OUTPUT, FINALFINAL_OUTPUT)
 
-        # filelength = float(get_length(FINAL_OUTPUT))
-
-        # layer3 = f"{layer3}{filename}"
-        # layer3len = round(float(get_length(layer3)), decimals)
-        # print(f"Layer 3 filelength is {filelength2}")
-
-        # command = f"ffmpeg -ss -0 -i {FINAL_OUTPUT} -t {filelength2} -c copy {FINALFINAL_OUTPUT} -hide_banner -loglevel error"
-        # subprocess.call(command, shell=True)
-
-        # filelength = float(get_length(FINAL_OUTPUT))
-        # discrepancy = (filelength - layer3len) * discrepancy_multiplier
-
-        # if discrepancy >= 0:
-        #     print(f"Trimming by {discrepancy}")
-        #     command = f"ffmpeg -ss -0 -i {FINAL_OUTPUT} -t {layer3len-(discrepancy)}" \
-        #               f" -c:v libx264 -strict -2 " \
-        #               f" {FINALFINAL_OUTPUT} -hide_banner -loglevel error"
-        #     subprocess.call(command, shell=True)
-        # else:
-        #     print("nothing cut")
-        #     command = f"ffmpeg -ss -0 -i {FINAL_OUTPUT} -t {layer3len} " \
-        #               f" -c:v libx264 -strict -2 " \
-        #               f" {FINALFINAL_OUTPUT} -hide_banner -loglevel error"
-        #     subprocess.call(command, shell=True)
-
-        # renamefile(FINAL_OUTPUT, FINALFINAL_OUTPUT)
-
-        # filelength = float(get_length(FINAL_OUTPUT))
-
-        # if filelength-layer3len == 0:
-        #     print("There is no discrepancy between lengths of original clip and new clip.")
-        # else:
-        #     print(f"filelength of C0{k}_TRIMMEDEMPTY.MOV is {filelength}")
-        #     print(f"filelength of C0{k}_TRIMMED.MP4 layer 3 clip is {layer3len}")
-        #     print(f"The discrepancy is {filelength - layer3len}")
-
-        #remove old file
-
-        # deleteFile(FINAL_OUTPUT)
-
-    # deletePath(WAV_DIRECTORY)
-
-        #resize video clips by .88 with alpha border
 
 def replace_footage(suffix, clips_background, directory, replacement_footage):
 
@@ -102,6 +59,8 @@ def replace_footage(suffix, clips_background, directory, replacement_footage):
         if v == "toc":
             clips_background[k] = "100"
     clips_background = {int(k):int(v) for k, v in clips_background.items()}
+
+    deletePath(wav_dir)
 
     # connect consecutive clips
     cc = list(clips_background.items())

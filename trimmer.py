@@ -39,16 +39,8 @@ def trimmer():
         print(video)
     # print(myVideos)
 
-
-    try:
-        os.mkdir(vid_processed)
-    except FileExistsError:
-        pass
-    WAV_DIRECTORY = "./files/OUTPUT/wav_files/"
-    try:
-        os.mkdir(WAV_DIRECTORY)
-    except FileExistsError:
-        pass
+    createPath(vid_processed)
+    createPath(wav_dir)
 
     #Trim and delete mistakes
     for video_name in myVideos:
@@ -101,8 +93,6 @@ def trimmer():
         #add frame spill to the end
         hasLoudAudio[loud_instance[-1]:(loud_instance[-1])] = 1
 
-        # print(f'has loud audio is {hasLoudAudio}')
-        # for i in range(audioFrameCount):
         #combine into list of chunks
         chunks = [[0,0,0]]
         shouldIncludeFrame = np.zeros(audioFrameCount)
@@ -114,9 +104,7 @@ def trimmer():
             shouldIncludeFrame[i] = np.max(hasLoudAudio[start:end])
             if (i >= 1 and shouldIncludeFrame[i] != shouldIncludeFrame[i-1]): # Did we flip?
                 chunks.append([chunks[-1][1],i,shouldIncludeFrame[i-1]])
-        # print(chunks)
-        # print(f'early chunks are {chunks}')
-        # print(f'shouldincludeframes is {shouldIncludeFrame}')
+
         #Eliminate small middle chunks
         for chunk in chunks[1:-1]:
             if chunk[1] - chunk[0] < MAX_SILENCE_PERMITTED:
@@ -145,16 +133,7 @@ def trimmer():
         one_idxs = np.where(arr[:, 2] == 1)[0]
         arr[one_idxs[-1], 1] = arr[one_idxs[-1], 1] + FRAME_SPILL_BACK_FINAL
 
-        # print(arr)
-        # print(f'arr[-2, 1] is {arr[-1, 1]}')
-        # #add three frames to the end
-        # # arr[-1, 1] = arr[-1, 1] + FRAME_SPILL_BACK_FINAL
-        # print(f'modified arr[-1, 1] is {arr[-1, 1]}')
-        #[600.0, 648.0, 1.0], [648.0, 685, 0.0]]
-
         chunks = arr.tolist()
-        # print(f'chunks is {chunks}')
-        # print(f'shouldincludeframes is {shouldIncludeFrame}')
         """
         shouldincludeFrames ie. 1 reaches above threshold and 0 does not per frame
         [0. 0. 0. 0. 0. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.
@@ -177,7 +156,6 @@ def trimmer():
         # st()
         print(f'Chunked audio: {chunks}')
         # print(f'Mistakes detected and removing: {mistakes}')
-
 
         #create new Audio data array
         outputAudioData = np.zeros((0,audioData.shape[1]))

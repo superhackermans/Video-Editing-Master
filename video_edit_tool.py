@@ -6,6 +6,7 @@ from trimmer import *
 from remove_audio import *
 from transition_attacher import *
 from background_layer import *
+from slowzoom import *
 
 # frame_same("_TRIMMED.MP4", clips_all, OUTPUT_VIDEO_DIRECTORY)
 
@@ -31,3 +32,4 @@ if __name__ == '__main__':
     remove_audio(layer2)
     transitions("_TRIMMEDEMPTY.MOV", clips_background, layer1)
     altzoom("_TRIMMED.MP4", clips_ben, layer3)
+    # slow_zoom("_TRIMMED.MP4", clips_ben, layer3)

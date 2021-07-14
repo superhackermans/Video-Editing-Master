@@ -37,7 +37,7 @@ def attachcovers(suffix, clips_cover, directory):
 
         # layer3 = f"{layer3}{filename}"
         # wavlen = round(float(get_length(layer3))-(cutamtcover), decimals)
-        wavlen = float(get_length(OUTPUT_WAV))
+        wavlen = float(get_length(OUTPUT_WAV)) + addamtcover
         coverlen = float(get_length(coverloc))
 
         ratio = (wavlen/coverlen)
