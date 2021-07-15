@@ -25,7 +25,7 @@ def altzoom(suffix, clips, directory):
     target_dir = TEMP_FOLDER
 
     for clip in alterClips:
-        filename = f"C0{clip}{suffix}"
+        filename = f"{cam_pre}{clip}{suffix}"
         try:
             shutil.move(os.path.join(source_dir, filename), target_dir)
         except:
@@ -33,7 +33,7 @@ def altzoom(suffix, clips, directory):
 
     #extract WAV audio from trimmed videos
     for clip in alterClips:
-        filename = f"C0{clip}{suffix}"
+        filename = f"{cam_pre}{clip}{suffix}"
         print(f"Zooming in {filename}")
         INPUT_TRIMMED_FILE = f"{TEMP_FOLDER}{inputToOutputNewTrimmed(clip)}"
         OUTPUT_ZOOMED = f"{directory}{inputToOutputNewTrimmedAndZoomed(clip)}"

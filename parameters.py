@@ -7,11 +7,12 @@ from shutil import copyfile, rmtree, copytree
 import os
 import os.path
 from pdb import set_trace as st
+import numpy as np
 
-cutamttransparency = 0
+cutamttransparency = 1/36
 discrepancy_multiplier = 1
-cutamtbg = 0
-addamtcover = 1/48
+cutamtbg = 1/18
+addamtcover = -1/24
 decimals = 3
 
 # camera prefix
@@ -25,6 +26,7 @@ vid_processed = "./files/OUTPUT/processed_raw_files/"
 layer1 = "./files/OUTPUT/trimmed_files_1st_layer/"
 layer2 = "./files/OUTPUT/trimmed_files_2nd_layer/"
 layer3 = "./files/OUTPUT/trimmed_files_3rd_layer/"
+layer4 = "./files/OUTPUT/trimmed_files_4th_layer/"
 pic_dir_in = "./files/INPUT/pictures/"
 wav_converting = "./files/OUTPUT/convert_to_wav/" #files with pictures to extract audio from
 cover_dir_out = "./files/OUTPUT/coverssplit/"
@@ -44,6 +46,8 @@ trans_in = "./assets/in.MOV"
 trans_out = "./assets/out.MOV"
 backgroundloc = "./assets/BORDER.mp4"
 pic_transparency = "./assets/transparency.png"
+vid_transparency = "./assets/transparency.mov"
+vid_transparency_smol = "./assets/transparency_smol.mov"
 
 #parameters
 frameRate = 24
@@ -63,6 +67,19 @@ original_dimensions = 3840, 2160
 scale_factor = .80
 raise_up = 500
 
+def dup_dir(directory, directory2):
+    try:
+        shutil.copytree(directory, directory2)
+    except (FileExistsError, OSError) as e:
+        pass
+def reset():
+    deletePath(layer1)
+    deletePath(layer2)
+    deletePath(layer3)
+    deletePath(layer4)
+    dup_dir(backuplayer, layer2)
+    dup_dir(backuplayer, layer3)
+    dup_dir(backuplayer, layer4)
 def createPath(s):
     try:
         os.mkdir(s)
@@ -94,12 +111,13 @@ def move_file(src, filename, dest):
         shutil.move(os.path.join(src, filename), dest)
     except:
         pass
-# def inputToOutputFilename(filename, suffix):
-#     dotIndex = filename.rfind(".")
-#     return filename[:dotIndex]+suffix+filename[dotIndex:]
+
+def nosuffix(filename):
+    dotIndex = filename.rfind(".")
+    return filename[:dotIndex]
 def inputToOutputFilename(filename):
     dotIndex = filename.rfind(".")
-    return filename[:dotIndex]+"_TRIMMED"+filename[dotIndex:]
+    return filename[:dotIndex]+"_TRIMMED.MOV"
 def inputToOutputWAV(filename):
     dotIndex = filename.rfind(".")
     return filename[:dotIndex]+".WAV"
@@ -110,17 +128,17 @@ def inputToOutputPNG(filename):
     dotIndex = filename.rfind(".")
     return filename[:dotIndex]+".png"
 def inputToOutputNewTrimmed(filename):
-    return "C0"+filename+"_TRIMMED.MP4"
+    return cam_pre+filename+"_TRIMMED.MOV"
 def inputToOutputNewWAV(filename):
-    return "C0"+filename+".WAV"
+    return cam_pre+filename+".WAV"
 def altElement(a):
     return a[::2]
 def inputToOutputNewTrimmedAndZoomed(filename):
-    return "C0"+filename+"_TRIMMEDZOOMED.MP4"
+    return cam_pre+filename+"_TRIMMEDZOOMED.MOV"
 def convert(suffix, filetype, newfiletype, clips, directory):
     for k,v in clips.items():
-        input = f"{directory}C0{k}{suffix}{filetype}"
-        output = f"{directory}C0{k}{suffix}{newfiletype}"
+        input = f"{directory}{cam_pre}{k}{suffix}{filetype}"
+        output = f"{directory}{cam_pre}{k}{suffix}{newfiletype}"
         command = f"ffmpeg -i {input} -hide_banner {output} -loglevel error"
         subprocess.call(command, shell=True)
         deleteFile(input)
@@ -170,6 +188,11 @@ clips_cover = {k: v for k, v in clips_images.items() if v == "c1" or v == "c2" o
                or v == "c10" or v == "c11" or v == "c12"}
 clips_background = {k: v for k, v in clips_images.items() if v.isdigit() or v == "toc"} # includes table of contents
 clips_toc = {k: v for k, v in clips_images.items() if v == "toc"}
+clips_all_except_pics = {k: v for k, v in clips_images.items() if v == "--" or v == "toc"
+                         or v == "c1" or v == "c2" or v == "c3"
+                         or v == "c4" or v == "c5" or v == "c6"
+                         or v == "c7" or v == "c8" or v == "c9"
+                         or v == "c10" or v == "c11" or v == "c12"}
 
 if __name__ == "__main__":
     make_folders()

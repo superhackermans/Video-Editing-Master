@@ -3,12 +3,19 @@ import numpy as np
 from backgroundattacher import *
 import os.path
 
-#duplicate file
-def dup_dir(directory, directory2):
-    try:
-        shutil.copytree(directory, directory2)
-    except:
-        FileExistsError
+
+def convertfile(suffix, newsuffix, clips, directory):
+    if bool(clips.items) == True:
+        for key, value in clips.items():
+            print(f"Converting {cam_pre}{key}{suffix} to {cam_pre}{key}{newsuffix}...")
+            filename = f"{directory}{cam_pre}{key}{suffix}"
+            newfilename = f"{directory}{cam_pre}{key}{newsuffix}"
+
+            command = f"ffmpeg -i {filename} -hide_banner {newfilename} -loglevel error"
+            subprocess.call(command, shell=True)
+
+            deleteFile(filename)
+
 def group_consecutives(vals, step=1):
     """Return list of consecutive lists of numbers from vals (number list)."""
     run = []
@@ -33,24 +40,29 @@ def add_transparency(suffix, newsuffix, clips, directory):
         filename = f"C0{k}{suffix}"
         print(f"Adding transparency to {filename}")
         INPUT_TRIMMED_FILE = f"{directory}{filename}"
-        OUTPUT_WAV = f"{wav_dir}{inputToOutputNewWAV(k)}"
+        # OUTPUT_WAV = f"{wav_dir}{inputToOutputNewWAV(k)}"
         FINAL_OUTPUT = f"{directory}C0TEMP{k}{newsuffix}"
-        FINALFINAL_OUTPUT = f"{directory}C0{k}{newsuffix}"
+        # FINALFINAL_OUTPUT = f"{directory}C0{k}{newsuffix}"
         # FINALFINAL_OUTPUT = f"{directory}C0{k}_TRIMMEDEMPTY.MOV"
         # command = f'ffmpeg -i {INPUT_TRIMMED_FILE} -i {TRANSPARENCY} -c:a copy {FINAL_OUTPUT}'
         # subprocess.call(command, shell=True)
-
-        # extract audio
-        command = f"ffmpeg -i {INPUT_TRIMMED_FILE} -hide_banner {OUTPUT_WAV} -loglevel error"
+        totallen = float(get_length(INPUT_TRIMMED_FILE)) - cutamttransparency
+        # from video
+        command = f"ffmpeg -ss -0 -i {vid_transparency_smol} -t {totallen} -c copy " \
+                  f" {FINAL_OUTPUT} -hide_banner -loglevel error"
         subprocess.call(command, shell=True)
 
-        # attach audio wav to transparent image
-        command = "ffmpeg -loop 1 -y -i " + pic_transparency + " -i " + OUTPUT_WAV + " -shortest -acodec copy -vcodec png " + " -hide_banner -loglevel error " + FINAL_OUTPUT
-        subprocess.call(command, shell=True)
+        # # extract audio
+        # command = f"ffmpeg -i {INPUT_TRIMMED_FILE} -hide_banner {OUTPUT_WAV} -loglevel error"
+        # subprocess.call(command, shell=True)
+
+        # # attach audio wav to transparent image
+        # command = "ffmpeg -loop 1 -y -i " + pic_transparency + " -i " + OUTPUT_WAV + " -shortest -acodec copy -vcodec png " + " -hide_banner -loglevel error " + FINAL_OUTPUT
+        # subprocess.call(command, shell=True)
 
         deleteFile(INPUT_TRIMMED_FILE)
-        renamefile(FINAL_OUTPUT, FINALFINAL_OUTPUT)
-
+        renamefile(FINAL_OUTPUT, INPUT_TRIMMED_FILE)
+    deletePath(wav_dir)
 
 def replace_footage(suffix, clips_background, directory, replacement_footage):
 
@@ -61,6 +73,7 @@ def replace_footage(suffix, clips_background, directory, replacement_footage):
     clips_background = {int(k):int(v) for k, v in clips_background.items()}
 
     deletePath(wav_dir)
+    deletePath(cover_cut)
 
     # connect consecutive clips
     cc = list(clips_background.items())
@@ -132,7 +145,7 @@ def replace_footage(suffix, clips_background, directory, replacement_footage):
             deleteFile(outputnobgloc)
 
             for j in group:
-                TRIMMED_LOC = f"{directory}C0{j}{suffix}"
+                TRIMMED_LOC = f"{directory}{cam_pre}{j}{suffix}"
                 # WAV_LOC = f"{directory}C0{j}_TRIMMED.WAV"
                 deleteFile(TRIMMED_LOC)
 

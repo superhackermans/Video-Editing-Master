@@ -19,6 +19,20 @@ def remove_audio(directory):
         deleteFile(in_vid)
         renamefile(out_vid, in_vid)
 
+def remove_audio_spec(suffix, clips, directory):
+    clips = {int(k):v for k, v in clips.items()}
+    clips_list = list(clips.keys())
+    if bool(clips_list) == True:
+        for clip in clips:
+            print(f"Removing audio from {cam_pre}{clip}{suffix}")
+            in_vid = f"{directory}{cam_pre}{clip}{suffix}"
+            out_vid = f"{directory}temp{cam_pre}{clip}{suffix}"
+            command = f"ffmpeg -y -i {in_vid} -c copy -an {out_vid} -hide_banner -loglevel error"
+            subprocess.call(command, shell=True)
+
+            deleteFile(in_vid)
+            renamefile(out_vid, in_vid)
+
 if __name__ == "__main__":
     remove_audio(layer1)
     remove_audio(layer2)

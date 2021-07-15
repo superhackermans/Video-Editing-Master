@@ -20,6 +20,7 @@ def attachcovers(suffix, clips_cover, directory):
     for key, value in clips_cover.items():
 
         filename = f"C0{key}{suffix}"
+        originalfile = f"{layer1}{filename}"
         cover = f"{value}_2"
         coverloc = f"{cover_dir_out}{cover}.mov"
         final_output = f"{directory}C0{key}_TRIMMEDCOVER.MOV"
@@ -27,24 +28,23 @@ def attachcovers(suffix, clips_cover, directory):
         print(f"Attaching cover {value} to {filename}")
 
         INPUT_TRIMMED_FILE = f"{directory}{filename}"
-        OUTPUT_WAV = f"{wav_dir}{inputToOutputNewWAV(key)}"
-
-        #convert trimmed mp4 into WAV in wav_files folder
-        command = "ffmpeg -i " + INPUT_TRIMMED_FILE + " -hide_banner " + OUTPUT_WAV + " -loglevel error"
-        subprocess.call(command, shell=True)
+        # OUTPUT_WAV = f"{wav_dir}{inputToOutputNewWAV(key)}"
+        #
+        # #convert trimmed mp4 into WAV in wav_files folder
+        # command = "ffmpeg -i " + INPUT_TRIMMED_FILE + " -hide_banner " + OUTPUT_WAV + " -loglevel error"
+        # subprocess.call(command, shell=True)
 
         # Matching video to audio duration and attach
 
         # layer3 = f"{layer3}{filename}"
         # wavlen = round(float(get_length(layer3))-(cutamtcover), decimals)
-        wavlen = float(get_length(OUTPUT_WAV)) + addamtcover
+        wavlen = float(get_length(originalfile)) + addamtcover
         coverlen = float(get_length(coverloc))
 
         ratio = (wavlen/coverlen)
 
-        command = f'ffmpeg -i {coverloc} -i {OUTPUT_WAV} -filter_complex "[0:v]setpts=PTS*{str(ratio)}[v]" -map "[v]" -map 1:a -shortest {final_output} -hide_banner -loglevel error'
+        command = f'ffmpeg -i {coverloc} -filter_complex "[0:v]setpts=PTS*{str(ratio)}[v]" -map "[v]" -shortest {final_output} -hide_banner -loglevel error'
         subprocess.call(command, shell=True)
-
 
         filelength = float(get_length(final_output))
 
@@ -83,18 +83,11 @@ def attachsidecovers(suffix, clips_cover, directory):
         coverbehindloc = f"{cover_dir_out}{coverbehind}.MOV"
         coverforwardloc = f"{cover_dir_out}{coverforward}.MOV"
 
-        final_output_b2 = f"{directory}C0{behindfilenum}_TRIMMEDEMPTY_1.MOV"
-        final_output_f2 = f"{directory}C0{forwardfilenum}_TRIMMEDEMPTY_1.MOV"
+        final_output_b2 = f"{directory}C0{behindfilenum}.5_TRIMMED.MOV"
+        final_output_f2 = f"{directory}C0{forwardfilenum}_1_TRIMMED.MOV"
 
-        def inputToOutputFilenameCUTCLIPB(filename):
-            return "C0" + filename + "_TRIMMEDEMPTY_0.MOV"
-        newbehindfileloc = f"{directory}{inputToOutputFilenameCUTCLIPB(str(int(key) - 1))}"
-        # newbehindtransitionloc = f"{directory}{inputToOutputFilenameTRANSITION(str(int(key) - 1))}"
-
-        def inputToOutputFilenameCUTCLIPF(filename):
-            return "C0" + filename + "_TRIMMEDEMPTY_2.MOV"
-        newfowardfileloc = f"{directory}{inputToOutputFilenameCUTCLIPF(str(int(key) + 1))}"
-        # newbehindtransitionloc = f"{directory}{inputToOutputFilenameTRANSITION(str(int(key) + 1))}"
+        newbehindfileloc = f"{directory}TEMP{behindfile}"
+        newfowardfileloc = f"{directory}TEMP{forwardfile}"
 
         #cut off 1 s section at the very end of behind clip
         if os.path.isfile(behindfileloc) == True:
@@ -112,11 +105,14 @@ def attachsidecovers(suffix, clips_cover, directory):
 
         # command = "ffmpeg -ignore_chapters 1 -i " + behindfileloc + " -vcodec qtrle -ss " + cut_point + " " + " -t 1 " + newbehindtransitionloc + " -hide_banner" + " -loglevel error"
         # subprocess.call(command, shell=True)
+        deleteFile(behindfileloc)
+        deleteFile(forwardfileloc)
+        renamefile(newbehindfileloc, behindfileloc)
+        renamefile(newfowardfileloc, forwardfileloc)
         copyfile(coverbehindloc, final_output_b2)
         copyfile(coverforwardloc, final_output_f2)
 
-        deleteFile(behindfileloc)
-        deleteFile(forwardfileloc)
+
 
 
 if __name__ == '__main__':

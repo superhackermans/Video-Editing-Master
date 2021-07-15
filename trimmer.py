@@ -24,11 +24,11 @@ def copyFrame(inputFrame,outputFrame):
     #     print(str(outputFrame+1)+" time-altered frames saved.")
     return True
 
-def trimmer():
+def trimmer(output_suffix, directory):
     # turn filenames in list
     myVideos = []
     print("Processing: ")
-    for file in os.listdir(vid_dir_in):
+    for file in os.listdir(directory):
         if file.endswith(".MP4") or file.endswith(".mp4"):
             myVideos.append(file)
     if not myVideos:
@@ -45,9 +45,9 @@ def trimmer():
     #Trim and delete mistakes
     for video_name in myVideos:
         print(f'Beginning Trimming for {video_name}')
-        INPUT_FILE = f"{vid_dir_in}{video_name}"
+        INPUT_FILE = f"{directory}{video_name}"
         assert INPUT_FILE != None , "No Input File Detected"
-        OUTPUT_FILE = f"{layer2}{inputToOutputFilename(video_name)}"
+        OUTPUT_FILE = f"{layer2}{nosuffix(video_name)}{output_suffix}"
 
         TEMP_FOLDER = "TEMP"
         createPath(TEMP_FOLDER)
@@ -205,7 +205,7 @@ def trimmer():
         shutil.rmtree(TEMP_FOLDER)
 
         #move file to processed_raw_files folder
-        source_dir = vid_dir_in
+        source_dir = directory
         target_dir = vid_processed
 
         shutil.move(os.path.join(source_dir, video_name), target_dir)
@@ -214,7 +214,7 @@ def trimmer():
 
     for video_name in myVideos:
 
-        target_dir = vid_dir_in
+        target_dir = directory
         source_dir = vid_processed
 
         shutil.move(os.path.join(source_dir, video_name), target_dir)

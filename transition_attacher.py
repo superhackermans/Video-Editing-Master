@@ -10,8 +10,6 @@ def transitions(suffix, clips_background, directory):
             clips_background[k] = "100"
     clips_background = {int(k):int(v) for k, v in clips_background.items()}
 
-    clips_background = {int(k):int(v) for k, v in clips_background.items()}
-
     # connect consecutive clips
     clips = list(clips_background.items())
     if bool(clips) == True:
@@ -20,21 +18,21 @@ def transitions(suffix, clips_background, directory):
 
         for group in consecutive_clips:
             if group[0] == group[-1]:
-                workingfiles = f"C0{group[0]}{suffix}"
+                workingfiles = f"{cam_pre}{group[0]}{suffix}"
             else:
-                workingfiles = f"C0{group[0]}{suffix} to C0{group[-1]}{suffix}"
+                workingfiles = f"{cam_pre}{group[0]}{suffix} to {cam_pre}{group[-1]}{suffix}"
 
             print(f"Attaching transitions to {workingfiles}")
 
-            transition_in_1 = f"C0{group[0]-1}{suffix}"
-            transition_in_2 = f"C0{group[0]}{suffix}"
-            transition_out_1 = f"C0{group[-1]}{suffix}"
-            transition_out_2 = f"C0{group[-1] + 1}{suffix}"
+            transition_in_1 = f"{cam_pre}{group[0]-1}{suffix}"
+            transition_in_2 = f"{cam_pre}{group[0]}{suffix}"
+            transition_out_1 = f"{cam_pre}{group[-1]}{suffix}"
+            transition_out_2 = f"{cam_pre}{group[-1] + 1}{suffix}"
 
-            transition_in_11 = f"C0{group[0]-1}.5{suffix}"
-            transition_in_22 = f"C0{group[0]}_1{suffix}"
-            transition_out_11 = f"C0{group[-1]}.5{suffix}"
-            transition_out_22 = f"C0{group[-1]+1}_1{suffix}"
+            transition_in_11 = f"{cam_pre}{group[0]-1}.5{suffix}"
+            transition_in_22 = f"{cam_pre}{group[0]}_1{suffix}"
+            transition_out_11 = f"{cam_pre}{group[-1]}.5{suffix}"
+            transition_out_22 = f"{cam_pre}{group[-1]+1}_1{suffix}"
 
             in_1_len = float(get_length(in_1))
             in_2_len = float(get_length(in_2))
