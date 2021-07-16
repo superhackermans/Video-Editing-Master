@@ -9,20 +9,25 @@ import os.path
 from pdb import set_trace as st
 import numpy as np
 
-cutamttransparency = 1/36
+cutamttransparency = 0
 discrepancy_multiplier = 1
-cutamtbg = 1/18
-addamtcover = -1/24
-decimals = 3
+cutamtbg = 0
+cutamtcover = 0
+decimals = 2
 
 # camera prefix
-cam_pre = "C0"
+cam = "C0"
+
+filesuffix = "_TRIMMED.MOV"
+
 
 #File locations
 data_file = "./files/data.txt"
 vid_dir_in = "./files/INPUT/unprocessed_raw_files/"
 cov_dir_in = "./files/INPUT/covers/"
 vid_processed = "./files/OUTPUT/processed_raw_files/"
+backuplayer = "./files/OUTPUT/backup_layer/"
+layer0 = "./files/OUTPUT/trimmed_files_0th_layer/"
 layer1 = "./files/OUTPUT/trimmed_files_1st_layer/"
 layer2 = "./files/OUTPUT/trimmed_files_2nd_layer/"
 layer3 = "./files/OUTPUT/trimmed_files_3rd_layer/"
@@ -35,7 +40,9 @@ pic_dir_out = "./files/OUTPUT/pictures/"
 cover_cut = "./files/OUTPUT/cutcover/"
 output_main = "./files/OUTPUT"
 
-backuplayer = "./files/OUTPUT/backup_layer/"
+
+
+TEMP_FOLDER = "TEMP"
 
 # asset file locations
 in_1 = "./assets/in_1.mov"
@@ -77,9 +84,11 @@ def reset():
     deletePath(layer2)
     deletePath(layer3)
     deletePath(layer4)
+    deletePath(layer0)
     dup_dir(backuplayer, layer2)
-    dup_dir(backuplayer, layer3)
-    dup_dir(backuplayer, layer4)
+    # frame_same(filesuffix, clips_all, layer2)
+    dup_dir(layer2, layer3)
+    dup_dir(layer3, layer4)
 def createPath(s):
     try:
         os.mkdir(s)
@@ -115,43 +124,61 @@ def move_file(src, filename, dest):
 def nosuffix(filename):
     dotIndex = filename.rfind(".")
     return filename[:dotIndex]
+def basesuffix(suffix):
+    dotIndex = suffix.rfind(".")
+    return suffix[dotIndex:]
 def inputToOutputFilename(filename):
     dotIndex = filename.rfind(".")
-    return filename[:dotIndex]+"_TRIMMED.MOV"
+    return filename[:dotIndex]+filesuffix
 def inputToOutputWAV(filename):
     dotIndex = filename.rfind(".")
     return filename[:dotIndex]+".WAV"
 def inputToOutputMOV(filename):
     dotIndex = filename.rfind(".")
-    return filename[:dotIndex]+"_TRIMMED.MOV"
+    return filename[:dotIndex]+filesuffix
 def inputToOutputPNG(filename):
     dotIndex = filename.rfind(".")
     return filename[:dotIndex]+".png"
 def inputToOutputNewTrimmed(filename):
-    return cam_pre+filename+"_TRIMMED.MOV"
+    return cam + filename + filesuffix
 def inputToOutputNewWAV(filename):
-    return cam_pre+filename+".WAV"
+    return cam + filename + ".WAV"
 def altElement(a):
     return a[::2]
 def inputToOutputNewTrimmedAndZoomed(filename):
-    return cam_pre+filename+"_TRIMMEDZOOMED.MOV"
+    return cam + filename + "_TRIMMEDZOOMED.MOV"
 def convert(suffix, filetype, newfiletype, clips, directory):
     for k,v in clips.items():
-        input = f"{directory}{cam_pre}{k}{suffix}{filetype}"
-        output = f"{directory}{cam_pre}{k}{suffix}{newfiletype}"
+        input = f"{directory}{cam}{k}{suffix}{filetype}"
+        output = f"{directory}{cam}{k}{suffix}{newfiletype}"
         command = f"ffmpeg -i {input} -hide_banner {output} -loglevel error"
         subprocess.call(command, shell=True)
         deleteFile(input)
+def sec_to_frames(suffix, clips, directory):
+    for k, v in dict(clips).items():
+        INPUTCLIP = f"{directory}C0{k}{suffix}"
+        TEMP_OUTPUT = f"{directory}C0{k}TEMP{suffix}"
+
+        filelen = round(float(get_length(INPUTCLIP)), decimals)
+        start_frame_num = 0
+        end_frame_num = filelen*24
+        command = f"ffmpeg -i {INPUTCLIP} " \
+                  f'-vf select="between(n\,{start_frame_num}\,{end_frame_num}),setpts=PTS-STARTPTS"' \
+                  f"{TEMP_OUTPUT} -hide_banner -loglevel error"
+        subprocess.call(command, shell=True)
+
+        deleteFile(INPUTCLIP)
+        renamefile(TEMP_OUTPUT, INPUTCLIP)
 
 def readfile(file):
-    file = open(data_file)
+    file = open(file)
     clips = []
     images = []
     clips_images = {}
 
     for line in file:
         splitLine = line.split("\t")
-        clips.append(splitLine[0])
+        clips.append(splitLine[0].zfill(3))
         if len(splitLine[1]) > 9:
             splitLine[1] = "--"
         images.append(splitLine[1].strip())
@@ -176,6 +203,7 @@ def make_folders():
             os.mkdir(directory)
         except FileExistsError:
             pass
+    deletePath(TEMP_FOLDER)
 
 clips_images = readfile(data_file)
 clips_all = {k: v for k, v in clips_images.items()}
@@ -189,6 +217,11 @@ clips_cover = {k: v for k, v in clips_images.items() if v == "c1" or v == "c2" o
 clips_background = {k: v for k, v in clips_images.items() if v.isdigit() or v == "toc"} # includes table of contents
 clips_toc = {k: v for k, v in clips_images.items() if v == "toc"}
 clips_all_except_pics = {k: v for k, v in clips_images.items() if v == "--" or v == "toc"
+                         or v == "c1" or v == "c2" or v == "c3"
+                         or v == "c4" or v == "c5" or v == "c6"
+                         or v == "c7" or v == "c8" or v == "c9"
+                         or v == "c10" or v == "c11" or v == "c12"}
+clips_ben_and_cover = {k: v for k, v in clips_images.items() if v == "--"
                          or v == "c1" or v == "c2" or v == "c3"
                          or v == "c4" or v == "c5" or v == "c6"
                          or v == "c7" or v == "c8" or v == "c9"

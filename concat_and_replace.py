@@ -14,9 +14,9 @@ def concat_and_replace (suffix, new_suffix, clips, directory, replacement_footag
             createPath(wav_dir)
 
             if group[0] == group[-1]:
-                outputfilename = f"{cam_pre}{group[0]}"
+                outputfilename = f"{cam}{group[0]}"
             else:
-                outputfilename = f"{cam_pre}{group[0]}-C0{group[-1]}"
+                outputfilename = f"{cam}{group[0]}-C0{group[-1]}"
 
             if replacement_footage == vid_transparency_smol:
                 print(f"Adding transparency to {outputfilename}{new_suffix}")
@@ -27,7 +27,7 @@ def concat_and_replace (suffix, new_suffix, clips, directory, replacement_footag
 
             lens = []
             for i in group:
-                fileloc = f"{directory}{cam_pre}{i}{suffix}"
+                fileloc = f"{directory}{cam}{i}{suffix}"
                 filelen = float(get_length(fileloc))
                 lens.append(filelen)
                 deleteFile(fileloc)
@@ -44,6 +44,9 @@ def concat_and_replace (suffix, new_suffix, clips, directory, replacement_footag
             command = f"ffmpeg -ss -0 -i {replacement_footage} -t {totallen} -c copy " \
                       f" {output} -hide_banner -loglevel error"
             subprocess.call(command, shell=True)
+            # st()
+            outputlen = float(get_length(output))
+            print(f"There is a discrepancy of {outputlen-totallen}")
             # #from pic
             # output = f"{directory}{outputfilename}pic{new_suffix}"
             # command = f"ffmpeg -loop 1 -i {pic_transparency} -t {totallen} {output} -hide_banner -loglevel error "

@@ -7,9 +7,9 @@ import os.path
 def convertfile(suffix, newsuffix, clips, directory):
     if bool(clips.items) == True:
         for key, value in clips.items():
-            print(f"Converting {cam_pre}{key}{suffix} to {cam_pre}{key}{newsuffix}...")
-            filename = f"{directory}{cam_pre}{key}{suffix}"
-            newfilename = f"{directory}{cam_pre}{key}{newsuffix}"
+            print(f"Converting {cam}{key}{suffix} to {cam}{key}{newsuffix}...")
+            filename = f"{directory}{cam}{key}{suffix}"
+            newfilename = f"{directory}{cam}{key}{newsuffix}"
 
             command = f"ffmpeg -i {filename} -hide_banner {newfilename} -loglevel error"
             subprocess.call(command, shell=True)
@@ -145,7 +145,7 @@ def replace_footage(suffix, clips_background, directory, replacement_footage):
             deleteFile(outputnobgloc)
 
             for j in group:
-                TRIMMED_LOC = f"{directory}{cam_pre}{j}{suffix}"
+                TRIMMED_LOC = f"{directory}{cam}{j}{suffix}"
                 # WAV_LOC = f"{directory}C0{j}_TRIMMED.WAV"
                 deleteFile(TRIMMED_LOC)
 

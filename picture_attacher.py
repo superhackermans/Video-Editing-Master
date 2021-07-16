@@ -20,7 +20,7 @@ def attachpictures(suffix, clips_pictures):
 
     for clip in clips_pictures_list:
         # print(f"Converting clip {clip} to WAV format")
-        filename = f"{cam_pre}{clip}{suffix}"
+        filename = f"{cam}{clip}{suffix}"
         try:
             shutil.move(os.path.join(source_dir, filename), target_dir)
         except:
@@ -66,7 +66,7 @@ def attachpictures(suffix, clips_pictures):
     for key, value in clips_pictures.items():
         if value.isdigit:
             INPUT_PICTURE = f"{pic_dir_in}{value}.png"
-            OUTPUT_PICTURE = f"{pic_dir_in}{cam_pre}{key}.png"
+            OUTPUT_PICTURE = f"{pic_dir_in}{cam}{key}.png"
             copyfile(INPUT_PICTURE, OUTPUT_PICTURE)
         else:
             pass

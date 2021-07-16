@@ -49,7 +49,6 @@ def trimmer(output_suffix, directory):
         assert INPUT_FILE != None , "No Input File Detected"
         OUTPUT_FILE = f"{layer2}{nosuffix(video_name)}{output_suffix}"
 
-        TEMP_FOLDER = "TEMP"
         createPath(TEMP_FOLDER)
 
         command = "ffmpeg -i " + INPUT_FILE + " -qscale:v " + str(

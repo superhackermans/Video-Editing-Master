@@ -19,11 +19,11 @@ def attachcovers(suffix, clips_cover, directory):
 
     for key, value in clips_cover.items():
 
-        filename = f"C0{key}{suffix}"
-        originalfile = f"{layer1}{filename}"
+        filename = f"{cam}{key}{suffix}"
+        originalfile = f"{backuplayer}{filename}"
         cover = f"{value}_2"
         coverloc = f"{cover_dir_out}{cover}.mov"
-        final_output = f"{directory}C0{key}_TRIMMEDCOVER.MOV"
+        final_output = f"{directory}{cam}{key}_TRIMMEDCOVER.MOV"
 
         print(f"Attaching cover {value} to {filename}")
 
@@ -38,7 +38,7 @@ def attachcovers(suffix, clips_cover, directory):
 
         # layer3 = f"{layer3}{filename}"
         # wavlen = round(float(get_length(layer3))-(cutamtcover), decimals)
-        wavlen = float(get_length(originalfile)) + addamtcover
+        wavlen = float(get_length(originalfile)) - cutamtcover
         coverlen = float(get_length(coverloc))
 
         ratio = (wavlen/coverlen)
@@ -73,18 +73,18 @@ def attachsidecovers(suffix, clips_cover, directory):
         #name everything
         behindfilenum = str(int(key)-1)
         forwardfilenum = str(int(key)+1)
-        behindfile = f"C0{behindfilenum}{suffix}"
-        forwardfile = f"C0{forwardfilenum}{suffix}"
+        behindfile = f"{cam}{behindfilenum}{suffix}"
+        forwardfile = f"{cam}{forwardfilenum}{suffix}"
         behindfileloc = f"{directory}{behindfile}"
         forwardfileloc = f"{directory}{forwardfile}"
 
         coverbehind = f"{value}_1"
         coverforward = f"{value}_3"
-        coverbehindloc = f"{cover_dir_out}{coverbehind}.MOV"
-        coverforwardloc = f"{cover_dir_out}{coverforward}.MOV"
+        coverbehindloc = f"{cover_dir_out}{coverbehind}{basesuffix(filesuffix)}"
+        coverforwardloc = f"{cover_dir_out}{coverforward}{basesuffix(filesuffix)}"
 
-        final_output_b2 = f"{directory}C0{behindfilenum}.5_TRIMMED.MOV"
-        final_output_f2 = f"{directory}C0{forwardfilenum}_1_TRIMMED.MOV"
+        final_output_b2 = f"{directory}{cam}{behindfilenum}.5{suffix}"
+        final_output_f2 = f"{directory}{cam}{forwardfilenum}_1{suffix}"
 
         newbehindfileloc = f"{directory}TEMP{behindfile}"
         newfowardfileloc = f"{directory}TEMP{forwardfile}"
