@@ -26,10 +26,14 @@ def concat_and_replace (suffix, new_suffix, clips, directory, replacement_footag
                 pass
 
             lens = []
+            total_packets = []
             for i in group:
                 fileloc = f"{directory}{cam}{i}{suffix}"
                 filelen = float(get_length(fileloc))
                 lens.append(filelen)
+                packets = float(get_packets(fileloc))
+                total_packets.append(packets)
+
                 deleteFile(fileloc)
 
             if replacement_footage == backgroundloc:
@@ -38,15 +42,19 @@ def concat_and_replace (suffix, new_suffix, clips, directory, replacement_footag
                 cutamt = 0
 
             totallen = sum(lens)-cutamt
-            #from video
+            totalpackets = float(sum(total_packets)/frameRate)
 
             output = f"{directory}{outputfilename}{new_suffix}"
             command = f"ffmpeg -ss -0 -i {replacement_footage} -t {totallen} -c copy " \
                       f" {output} -hide_banner -loglevel error"
             subprocess.call(command, shell=True)
             # st()
-            outputlen = float(get_length(output))
-            print(f"There is a discrepancy of {outputlen-totallen}")
+            # outputlen = float(get_length(output))
+            outputframes = float(get_packets(output))/frameRate
+            if totallen-outputframes == 0:
+                print("There is no discrepancy")
+            else:
+                print(f"There is a discrepancy of {totallen-outputframes}")
             # #from pic
             # output = f"{directory}{outputfilename}pic{new_suffix}"
             # command = f"ffmpeg -loop 1 -i {pic_transparency} -t {totallen} {output} -hide_banner -loglevel error "

@@ -53,7 +53,7 @@ trans_in = "./assets/in.MOV"
 trans_out = "./assets/out.MOV"
 backgroundloc = "./assets/BORDER.mp4"
 pic_transparency = "./assets/transparency.png"
-vid_transparency = "./assets/transparency.mov"
+# vid_transparency = "./assets/transparency.mov"
 vid_transparency_smol = "./assets/transparency_smol.mov"
 
 #parameters
@@ -77,6 +77,7 @@ raise_up = 500
 def dup_dir(directory, directory2):
     try:
         shutil.copytree(directory, directory2)
+        print(f"Duplicating {directory}")
     except (FileExistsError, OSError) as e:
         pass
 def reset():
@@ -86,7 +87,7 @@ def reset():
     deletePath(layer4)
     deletePath(layer0)
     dup_dir(backuplayer, layer2)
-    # frame_same(filesuffix, clips_all, layer2)
+    # sec_to_frames(filesuffix, clips_all, layer2)
     dup_dir(layer2, layer3)
     dup_dir(layer3, layer4)
 def createPath(s):
@@ -99,7 +100,7 @@ def deletePath(s):
         rmtree(s,ignore_errors=False)
     except OSError:
         print ("Deletion of the directory %s failed" % s)
-        print(OSError)
+        # print(OSError)
 def deleteFile(s):
     try:
         os.remove(s)
@@ -155,17 +156,18 @@ def convert(suffix, filetype, newfiletype, clips, directory):
         subprocess.call(command, shell=True)
         deleteFile(input)
 def sec_to_frames(suffix, clips, directory):
+    print("Making things frame perfect...")
     for k, v in dict(clips).items():
-        INPUTCLIP = f"{directory}C0{k}{suffix}"
-        TEMP_OUTPUT = f"{directory}C0{k}TEMP{suffix}"
-
-        filelen = round(float(get_length(INPUTCLIP)), decimals)
-        start_frame_num = 0
-        end_frame_num = filelen*24
-        command = f"ffmpeg -i {INPUTCLIP} " \
-                  f'-vf select="between(n\,{start_frame_num}\,{end_frame_num}),setpts=PTS-STARTPTS"' \
-                  f"{TEMP_OUTPUT} -hide_banner -loglevel error"
+        INPUTCLIP = f"{directory}{cam}{k}{suffix}"
+        TEMP_OUTPUT = f"{directory}{cam}{k}TEMP{suffix}"
+        print(f"working on clip {cam}{k}...")
+        filelen = float(get_packets(INPUTCLIP))/frameRate
+        command = f"ffmpeg -ss -0 -i {INPUTCLIP} -t {filelen}  -c copy  " \
+                  f" {TEMP_OUTPUT} -hide_banner -loglevel error"
         subprocess.call(command, shell=True)
+
+        print(f"The length is {float(get_length(TEMP_OUTPUT))}")
+        print(f"The desired length is {filelen}")
 
         deleteFile(INPUTCLIP)
         renamefile(TEMP_OUTPUT, INPUTCLIP)
@@ -185,8 +187,8 @@ def readfile(file):
         images = [i.replace('Photo ', '') for i in images]
     clips_images = dict(zip(clips, images))
     file.close()
-
     return clips_images
+
 def get_length(fileloc):
     # filelength = float(get_length(fileloc))
     # get length of a file
@@ -194,6 +196,22 @@ def get_length(fileloc):
     proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, )
     filelength = proc.communicate()[0].decode('utf-8').strip('\n')
     return filelength
+
+def get_packets(fileloc):
+    # filelength = float(get_length(fileloc))
+    # get number of frames in a file
+    command = "ffprobe -v error -select_streams v:0 -count_packets -show_entries stream=nb_read_packets -of csv=p=0 " + fileloc + " -hide_banner -loglevel error"
+    proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, )
+    packets = proc.communicate()[0].decode('utf-8').strip('\n')
+    return packets
+
+def get_frames(fileloc):
+    # filelength = float(get_length(fileloc))
+    # get number of frames in a file
+    command = "ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=nb_read_frames -of csv=p=0 " + fileloc + " -hide_banner -loglevel error"
+    proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, )
+    frames = proc.communicate()[0].decode('utf-8').strip('\n')
+    return frames
 
 #make directories if not there
 def make_folders():
