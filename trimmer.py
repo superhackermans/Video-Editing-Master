@@ -218,6 +218,7 @@ def trimmer(output_suffix, directory):
 
         shutil.move(os.path.join(source_dir, video_name), target_dir)
 
+    deletePath(vid_processed)
     print("Finished trimming all files bitch")
 
 # trimmer()
