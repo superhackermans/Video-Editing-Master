@@ -28,7 +28,7 @@ if __name__ == '__main__':
                           cover_dir_out, pic_dir_out, ]
     delete_directories = [wav_dir, pic_dir_out, layer1,
                           wav_converting, "./TEMP", layer3,
-                          cover_dir_out, layer2]
+                          cover_dir_out, layer2, layer4, backuplayer]
 
     if x == "yes" or x == "y":
         for file in input_directories:
@@ -48,7 +48,7 @@ if __name__ == '__main__':
                 shutil.rmtree(directory)
             except:
                 pass
-
+        erasetextfile(data_file)
     elif x == "o":
         for file in output_directories:
             try:
