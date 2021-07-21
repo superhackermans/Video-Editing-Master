@@ -1,3 +1,11 @@
+from cover_splitter import *
+from concat_and_replace import *
+from picture_attacher import *
+from remove_audio import *
+from trimmer import *
+from cover_attacher import *
+from transition_attacher import *
+from alternate_zoom import *
 import os
 from shutil import copyfile, rmtree
 import subprocess
@@ -13,7 +21,7 @@ cutamttransparency = 0
 discrepancy_multiplier = 1
 cutamtbg = 0
 cutamtcover = 0
-decimals = 2
+decimals = 3
 
 # camera prefix
 cam = "C0"
@@ -51,7 +59,7 @@ out_1 = "./assets/out_1.mov"
 out_2 = "./assets/out_2.mov"
 trans_in = "./assets/in.MOV"
 trans_out = "./assets/out.MOV"
-backgroundloc = "./assets/BORDER.mp4"
+backgroundloc = "./assets/BORDER.MOV"
 pic_transparency = "./assets/transparency.png"
 # vid_transparency = "./assets/transparency.mov"
 vid_transparency_smol = "./assets/transparency_smol.mov"
@@ -73,6 +81,20 @@ MAX_SILENCE_PERMITTED = 36 #length of frames permitted to not count as silence
 original_dimensions = 3840, 2160
 scale_factor = .80
 raise_up = 500
+
+def jpg_to_png(directory):
+    myJPEG = []
+    for file in os.listdir(directory):
+        if file.endswith(".jpg") or file.endswith(".jpeg") or file.endswith(".JPG") or file.endswith(".JPEG"):
+            myJPEG.append(file)
+    myJPEG = sorted(myJPEG)
+    for jpg in myJPEG:
+        # print(f"Converting {jpg} to PNG format")
+        INPUT_JPG = f"{directory}{jpg}"
+        OUTPUT_PNG = f"{directory}{inputToOutputPNG(jpg)}"
+        # convert JPG to PNG
+        command = "ffmpeg -i " + INPUT_JPG + " -hide_banner " + OUTPUT_PNG + " -loglevel error"
+        subprocess.call(command, shell=True)
 
 def dup_dir(directory, directory2):
     try:
@@ -125,6 +147,9 @@ def move_file(src, filename, dest):
 def nosuffix(filename):
     dotIndex = filename.rfind(".")
     return filename[:dotIndex]
+def tempclip(filename, suffix):
+    dotIndex = filename.rfind(".")
+    return filename[:dotIndex]+"TEMP"+suffix
 def basesuffix(suffix):
     dotIndex = suffix.rfind(".")
     return suffix[dotIndex:]
@@ -198,7 +223,6 @@ def get_length(fileloc):
     return filelength
 
 def get_packets(fileloc):
-    # filelength = float(get_length(fileloc))
     # get number of frames in a file
     command = "ffprobe -v error -select_streams v:0 -count_packets -show_entries stream=nb_read_packets -of csv=p=0 " + fileloc + " -hide_banner -loglevel error"
     proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, )
@@ -206,7 +230,6 @@ def get_packets(fileloc):
     return packets
 
 def get_frames(fileloc):
-    # filelength = float(get_length(fileloc))
     # get number of frames in a file
     command = "ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=nb_read_frames -of csv=p=0 " + fileloc + " -hide_banner -loglevel error"
     proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, )
