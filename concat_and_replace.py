@@ -1,5 +1,4 @@
 from parameters import *
-from background_layer import *
 
 def concat_and_replace (suffix, new_suffix, clips, directory, replacement_footage):
     for k, v in clips.items():
@@ -25,36 +24,70 @@ def concat_and_replace (suffix, new_suffix, clips, directory, replacement_footag
             else:
                 pass
 
-            lens = []
-            total_packets = []
+            # lens = []
+            frames = []
             for i in group:
                 fileloc = f"{directory}{cam}{i}{suffix}"
-                filelen = float(get_length(fileloc))
-                lens.append(filelen)
+                # filelen = float(get_length(fileloc))
+                # lens.append(filelen)
                 packets = float(get_packets(fileloc))
-                total_packets.append(packets)
-
+                frames.append(packets)
+                # print(f"frames by length is {filelen*frameRate}")
+                # print(f"frames by frame is {packets}")
                 deleteFile(fileloc)
 
-            if replacement_footage == backgroundloc:
-                cutamt = cutamtbg
-            else:
-                cutamt = 0
+            # current_total_len = sum(lens)
+            # print(f"Current total len is {current_total_len}")
+            desired_frames = float(sum(frames))
+            current_total_len = float(desired_frames/frameRate)
+            # print(f"Current total len is {current_total_len}")
 
-            totallen = sum(lens)-cutamt
-            totalpackets = float(sum(total_packets)/frameRate)
-
-            output = f"{directory}{outputfilename}{new_suffix}"
-            command = f"ffmpeg -ss -0 -i {replacement_footage} -t {totallen} -c copy " \
-                      f" {output} -hide_banner -loglevel error"
-            subprocess.call(command, shell=True)
-            # st()
-            # outputlen = float(get_length(output))
-            outputframes = float(get_packets(output))/frameRate
-            if totallen-outputframes == 0:
-                print("There is no discrepancy")
+            if replacement_footage == vid_transparency_smol:
+                output = f"{directory}{outputfilename}{new_suffix}"
+                command = f"ffmpeg -ss -0 -i {replacement_footage} -t {current_total_len} -c copy {output} -hide_banner -loglevel error"
+                subprocess.call(command, shell=True)
             else:
-                print(f"There is a discrepancy of {totallen-outputframes}")
+                output = f"{directory}{outputfilename}{new_suffix}"
+                command = f"ffmpeg -ss -0 -i {replacement_footage} -t {current_total_len} -c copy {output} -hide_banner -loglevel error"
+                subprocess.call(command, shell=True)
+
+            # outputframes = float(get_packets(output))
+            # framediscrepancy = float(outputframes-desired_frames)
+            # if framediscrepancy == 0:
+            #     pass
+            # else:
+            #     while framediscrepancy>.5:
+            #         adjustment = .051
+            #         current_total_len = float(outputframes/frameRate-(adjustment))
+            #
+            #         print(f"Total frames is now {outputframes}. Desired frames is {desired_frames}")
+            #         print(f"There is a discrepancy of {framediscrepancy} frame(s). Trimming clip.")
+            #         print(f"Adjustment is {adjustment}")
+            #         print(f"Readjusting to {current_total_len * frameRate}.")
+            #
+            #         output = f"{directory}{outputfilename}{new_suffix}"
+            #         command = f"ffmpeg -y -ss -0 -i {replacement_footage} -t {current_total_len} {output} -hide_banner -loglevel error"
+            #         subprocess.call(command, shell=True)
+            #
+            #         outputframes = float(get_packets(output))
+            #         framediscrepancy = float(outputframes-desired_frames)
+            #     while framediscrepancy<-.5:
+            #         adjustment = -.051
+            #         current_total_len = float(outputframes/frameRate-(adjustment))
+            #
+            #         print(f"Total frames is now {outputframes}. Desired frames is {desired_frames}")
+            #         print(f"There is a discrepancy of {framediscrepancy} frame(s). Extending clip.")
+            #         print(f"Adjustment is {adjustment}")
+            #         print(f"Readjusting to {current_total_len * frameRate}.")
+            #
+            #         output = f"{directory}{outputfilename}{new_suffix}"
+            #         command = f"ffmpeg -y -ss -0 -i {replacement_footage} -t {current_total_len} {output} -hide_banner -loglevel error"
+            #         subprocess.call(command, shell=True)
+            #
+            #         outputframes = float(get_packets(output))
+            #         framediscrepancy = float(outputframes-desired_frames)
+            #     print(f"The discrepancy is {framediscrepancy} frame(s).")
+
             # #from pic
             # output = f"{directory}{outputfilename}pic{new_suffix}"
             # command = f"ffmpeg -loop 1 -i {pic_transparency} -t {totallen} {output} -hide_banner -loglevel error "
