@@ -11,7 +11,6 @@ from alternate_zoom import *
 if __name__ == '__main__':
     # make_folders()
     # trimmer(filesuffix, vid_dir_in) # desired output, and directory
-    # attachpictures(filesuffix, clips_pictures)
     # splitcovers(cov_dir_in)
     #
     # dup_dir(layer2, backuplayer)
@@ -23,9 +22,9 @@ if __name__ == '__main__':
     concat_and_replace(filesuffix, filesuffix, clips_all_except_pics, layer2, vid_transparency_smol)
     concat_and_replace(filesuffix, filesuffix, clips_background, layer3, backgroundloc)
     concat_and_replace(filesuffix, filesuffix, clips_ben_and_cover, layer3, vid_transparency_smol)
-    remove_audio(layer2)
-    remove_audio(layer3)
 
+    newattachpictures(filesuffix, clips_pictures, layer2)
+    #
     # attachcovers(filesuffix, clips_cover, layer4)
 
     # dup_dir(layer4, layer1)
