@@ -1,11 +1,3 @@
-from cover_splitter import *
-from concat_and_replace import *
-from picture_attacher import *
-from remove_audio import *
-from trimmer import *
-from cover_attacher import *
-from transition_attacher import *
-from alternate_zoom import *
 import os
 from shutil import copyfile, rmtree
 import subprocess
@@ -82,6 +74,19 @@ original_dimensions = 3840, 2160
 scale_factor = .80
 raise_up = 500
 
+def group_consecutives(vals, step=1):
+    """Return list of consecutive lists of numbers from vals (number list)."""
+    run = []
+    result = [run]
+    expect = None
+    for v in vals:
+        if (v == expect) or (expect is None):
+            run.append(v)
+        else:
+            run = [v]
+            result.append(run)
+        expect = v + step
+    return result
 def jpg_to_png(directory):
     myJPEG = []
     for file in os.listdir(directory):
