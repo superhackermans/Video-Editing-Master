@@ -4,17 +4,42 @@ from shutil import copyfile, rmtree
 import os
 import shutil
 
-def attachpictures(suffix, clips_pictures):
+def newattachpictures(suffix, clips, directory):
+    print("Beginning picture attaching")
+
+    copy_directory(pic_dir_in, pic_dir_out)
+
+    jpg_to_png(pic_dir_in)
+
+    for key, value in clips.items():
+        if value.isdigit:
+            INPUT_PICTURE = f"{pic_dir_in}{value}.png"
+            OUTPUT_PICTURE = f"{pic_dir_in}{cam}{key}.png"
+            copyfile(INPUT_PICTURE, OUTPUT_PICTURE)
+        else:
+            pass
+
+        print(f"Attaching picture to {cam}{key}{suffix}")
+        INPUT_IMAGE = f"{pic_dir_in}{cam}{key}.png"
+        OUTPUT_MOV = f"{directory}{cam}{key}{suffix}"
+        filelen = float(get_length(OUTPUT_MOV))
+        command = f"ffmpeg -loop 1 -y -i {INPUT_IMAGE} -c copy -t {filelen} {OUTPUT_MOV} -hide_banner -loglevel error "
+        subprocess.call(command, shell=True)
+
+        deleteFile(OUTPUT_PICTURE)
+
+
+def attachpictures(suffix, clips, directory):
     print("Beginning picture attaching")
 
     createPath(wav_dir)
 
     copy_directory(pic_dir_in, pic_dir_out)
 
-    clips_pictures_list = list(clips_pictures.keys())
+    clips_pictures_list = list(clips.keys())
 
     #check which trimmed videos to extract WAV audio from and move them into convert_to_wav folder
-    source_dir = layer2
+    source_dir = directory
     target_dir= wav_converting
     createPath(wav_converting)
 
@@ -86,7 +111,7 @@ def attachpictures(suffix, clips_pictures):
         print(f"Attaching picture to {file}")
         INPUT_WAV = f"{wav_dir}{file}"
         INPUT_IMAGE = f"{pic_dir_in}{inputToOutputPNG(file)}"
-        OUTPUT_MOV = f"{layer2}{inputToOutputMOV(file)}"
+        OUTPUT_MOV = f"{directory}{inputToOutputMOV(file)}"
         #combine wav and png to mp4
         command = f"ffmpeg -loop 1 -y -i {INPUT_IMAGE} -i {INPUT_WAV} -shortest -acodec copy -vcodec png {OUTPUT_MOV} -hide_banner -loglevel error "
         subprocess.call(command, shell=True)
