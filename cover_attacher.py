@@ -1,4 +1,3 @@
-
 from parameters import *
 
 
@@ -6,62 +5,45 @@ def inputToOutputWAV(filename):
     dotIndex = filename.rfind(".")
     return filename[:dotIndex]+".WAV"
 def inputToOutputNewWAV(filename):
-    return "C0"+filename+".WAV"
+    return cam+filename+".WAV"
 def inputToOutputFilenameTRANSITION(filename):
-    return "C0"+filename+"_transition.MOV"
+    return cam+filename+"_transition.MOV"
 
 def attachcovers(suffix, clips_cover, directory):
     # find which clips have cover pages
 
-    createPath(wav_dir)
-
     for key, value in clips_cover.items():
 
         filename = f"{cam}{key}{suffix}"
-        originalfile = f"{backuplayer}{filename}"
+        originalfile = f"{layer4}{filename}"
         cover = f"{value}_2"
         coverloc = f"{cover_dir_out}{cover}.mov"
-        final_output = f"{directory}{cam}{key}_TRIMMEDCOVER.MOV"
+        final_output = f"{directory}{cam}{key}{suffix}"
 
         print(f"Attaching cover {value} to {filename}")
 
-        INPUT_TRIMMED_FILE = f"{directory}{filename}"
-        # OUTPUT_WAV = f"{wav_dir}{inputToOutputNewWAV(key)}"
-        #
-        # #convert trimmed mp4 into WAV in wav_files folder
-        # command = "ffmpeg -i " + INPUT_TRIMMED_FILE + " -hide_banner " + OUTPUT_WAV + " -loglevel error"
-        # subprocess.call(command, shell=True)
+        original_len = get_length(originalfile)
+        coverlen = get_length(coverloc)
 
-        # Matching video to audio duration and attach
+        ratio = (original_len/coverlen)
 
-        # layer3 = f"{layer3}{filename}"
-        # wavlen = round(float(get_length(layer3))-(cutamtcover), decimals)
-        wavlen = float(get_length(originalfile)) - cutamtcover
-        coverlen = float(get_length(coverloc))
-
-        ratio = (wavlen/coverlen)
-
-        command = f'ffmpeg -i {coverloc} -filter_complex "[0:v]setpts=PTS*{str(ratio)}[v]" -map "[v]" -shortest {final_output} -hide_banner -loglevel error'
+        command = f'ffmpeg -y -i {coverloc} -filter_complex "[0:v]setpts=PTS*{str(ratio)}[v]" -map "[v]" -shortest {final_output} -hide_banner -loglevel error'
         subprocess.call(command, shell=True)
 
-        filelength = float(get_length(final_output))
+        frame_len = get_packets(final_output)
+        original_frames = get_packets(originalfile)
 
-        if wavlen-filelength == 0:
+        if original_frames-frame_len == 0:
             print("There was no discrepancy between lengths.")
         else:
-            print(f"filelength of cover {value} is {filelength}")
-            print(f"filelength of layer 3 clip is {wavlen}")
-            print(f"The discrepancy is {filelength - wavlen}")
-
-        #delete old file
-        try:
-            os.remove(f"{directory}C0{key}{suffix}")
-        except:
-            FileNotFoundError
-
-    deletePath(wav_dir)
+            print(f"filelength of cover {value} is {frame_len} frames")
+            print(f"filelength of layer 3 clip is {original_frames} frames")
+            print(f"The discrepancy is {frame_len - original_frames} frames")
 
 def attachsidecovers(suffix, clips_cover, directory):
+
+    buffer = 1/24
+
     print("Attaching sides of covers")
     #make wav directory
 
@@ -89,13 +71,15 @@ def attachsidecovers(suffix, clips_cover, directory):
 
         #cut off 1 s section at the very end of behind clip
         if os.path.isfile(behindfileloc) == True:
-            cut_point = str(float(get_length(behindfileloc))-1)
+            transition1frames = get_packets(coverbehindloc)
+            cut_point = str(float(get_length(behindfileloc))-transition1frames/frameRate+buffer)
             command = f"ffmpeg -ignore_chapters 1 -i {behindfileloc} -vcodec qtrle -ss 0 -t {cut_point} {newbehindfileloc} -hide_banner -loglevel error"
                       # f" -c:v libx264 -strict -2 " \
             subprocess.call(command, shell=True)
         if os.path.isfile(forwardfileloc) == True:
-            cut_point = str(float(get_length(forwardfileloc))-1)
-            command = f"ffmpeg -ignore_chapters 1 -i {forwardfileloc} -vcodec qtrle -ss 1 -t {cut_point} {newfowardfileloc} -hide_banner -loglevel error"
+            transition2frames = get_packets(coverforwardloc)
+            cut_point = str(float(get_length(forwardfileloc))-transition2frames/frameRate)
+            command = f"ffmpeg -ignore_chapters 1 -i {forwardfileloc} -vcodec qtrle -ss {transition2frames/frameRate} -t {cut_point} {newfowardfileloc} -hide_banner -loglevel error"
                       # f" -c:v libx264 -strict -2 " \
             subprocess.call(command, shell=True)
 
