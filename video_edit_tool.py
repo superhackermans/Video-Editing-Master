@@ -8,10 +8,12 @@ from cover_attacher import *
 from transition_attacher import *
 from alternate_zoom import *
 from zoomandfade import slow_zoom, fade_out
+from background_layer import *
+from pop_ups import *
 
 if __name__ == '__main__':
-    make_folders()
-    trimmer(filesuffix, vid_dir_in) # desired output, and directory
+    # make_folders()
+    # trimmer(filesuffix, vid_dir_in) # desired output, and directory
     splitcovers(cov_dir_in)
 
     dup_dir(layer2, backuplayer)
@@ -42,3 +44,5 @@ if __name__ == '__main__':
     altzoom(filesuffix, clips_ben, layer4)
     slow_zoom(filesuffix, clips_ben, layer4)
     fade_out(filesuffix, clips_ben, layer4)
+
+    bottom_pop_ups(clips_pop_up, layer00)
