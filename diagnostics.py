@@ -1,6 +1,7 @@
 from parameters import *
 
 all_layers = [layer0, layer1, layer2, layer3, layer4]
+some_layers = [layer2, layer3, layer4]
 
 def count_frames(directory):
     clips = [] # clip is file name
@@ -24,8 +25,6 @@ def count_frames(directory):
     print(f"total_frames for {directory} is {total_frames}")
     print(f"total_len for {directory} is {round(total_len, 3)}")
 
-
-
 if __name__ == '__main__':
-    for layer in all_layers:
+    for layer in some_layers:
         count_frames(layer)
