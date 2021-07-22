@@ -7,6 +7,7 @@ from trimmer import *
 from cover_attacher import *
 from transition_attacher import *
 from alternate_zoom import *
+from zoomandfade import slow_zoom, fade_out
 
 if __name__ == '__main__':
     # make_folders()
@@ -16,25 +17,31 @@ if __name__ == '__main__':
     # dup_dir(layer2, backuplayer)
     # dup_dir(layer2, layer3)
     # dup_dir(layer2, layer4)
-
+    #
     reset()
-
-    concat_and_replace(filesuffix, filesuffix, clips_all_except_pics, layer2, vid_transparency_smol)
+    #
+    concat_and_replace(filesuffix, filesuffix, clips_all_except_pics_and_vid, layer2, vid_transparency_smol)
     concat_and_replace(filesuffix, filesuffix, clips_background, layer3, backgroundloc)
     concat_and_replace(filesuffix, filesuffix, clips_ben_and_cover, layer3, vid_transparency_smol)
 
-    newattachpictures(filesuffix, clips_pictures, layer2)
-    #
-    # attachcovers(filesuffix, clips_cover, layer4)
+    attach_pictures(filesuffix, clips_pictures, layer2)
+    attach_videos(filesuffix, clips_video, layer2)
 
-    # dup_dir(layer4, layer1)
-    # dup_dir(layer4, layer0)
-    # add_transparency(filesuffix, filesuffix, clips_all, layer1)
-    # add_transparency(filesuffix, filesuffix, clips_all, layer0)
-    # attachcovers(filesuffix, clips_cover, layer0)
-    # attachsidecovers(filesuffix, clips_cover, layer0)
-    # transitions(filesuffix, clips_background, layer1)
+    dup_dir(backuplayer, layer0)
+    add_transparency(filesuffix, filesuffix, clips_all, layer0)
+    dup_dir(layer0, layer1)
 
-    # altzoom(filesuffix, clips_ben, layer4)
-    # slow_zoom("_TRIMMED.MP4", clips_ben, layer4)
+    #covers
+    attachcovers(filesuffix, clips_cover, layer1)
+    attachsidecovers(filesuffix, clips_cover, layer1)
+    concat_and_replace(filesuffix, filesuffix, clips_all_except_cover, layer1, vid_transparency_smol)
 
+    #transitions
+    transitions(filesuffix, clips_background, layer0)
+    concat_and_replace(filesuffix, filesuffix, clips_background, layer0, vid_transparency_smol)
+    concat_and_replace(filesuffix, filesuffix, clips_ben, layer0, vid_transparency_smol)
+
+    #zooms and fades
+    altzoom(filesuffix, clips_ben, layer4)
+    slow_zoom(filesuffix, clips_ben, layer4)
+    fade_out(filesuffix, clips_ben, layer4)
