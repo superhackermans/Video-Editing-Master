@@ -2,9 +2,9 @@ from parameters import *
 
 
 def slow_zoom(suffix, clips, directory):
-    saturation = 1.01
+    saturation = 1.00
     brightness = 0
-    gamma = .97
+    gamma = .98
     gamma_r = 1
     gamma_g = 0.99
     zoom_in = 1.2
