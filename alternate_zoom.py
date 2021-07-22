@@ -9,7 +9,7 @@ def altzoom(suffix, clips, directory):
 
     alterClips = altElement(clips)
     alterClips = sorted(alterClips[1:-1])
-    st()
+
     TEMP_FOLDER = "./files/OUTPUT/alterClips/"
     createPath(TEMP_FOLDER)
 
