@@ -2,9 +2,10 @@ from parameters import *
 import subprocess
 from shutil import copyfile, rmtree
 import os
+import os.path
 import shutil
 
-def newattachpictures(suffix, clips, directory):
+def attach_pictures(suffix, clips, directory):
     print("Beginning picture attaching")
 
     copy_directory(pic_dir_in, pic_dir_out)
@@ -28,97 +29,28 @@ def newattachpictures(suffix, clips, directory):
 
         deleteFile(OUTPUT_PICTURE)
 
+def attach_videos(suffix, clips, directory):
+    for k, v in clips.items():
+        if os.path.isfile(f"{pic_dir_in}{v}.mov") == True:
+            input = f"{pic_dir_in}{v}.mov"
+            output = f"{pic_dir_in}{v}.mp4"
+            command = f"ffmpeg -i {input} -hide_banner {output} -loglevel error"
+            subprocess.call(command, shell=True)
 
-def attachpictures(suffix, clips, directory):
-    print("Beginning picture attaching")
+        in_vid = f"{pic_dir_in}{v}.mp4"
+        out_vid = f"{directory}{cam}{k}.mp4"
+        original_vid = f"{directory}{cam}{k}{suffix}"
 
-    createPath(wav_dir)
+        original_len = get_length(original_vid)
+        vid_len = get_length(in_vid)
+        ratio = (original_len / vid_len)
 
-    copy_directory(pic_dir_in, pic_dir_out)
-
-    clips_pictures_list = list(clips.keys())
-
-    #check which trimmed videos to extract WAV audio from and move them into convert_to_wav folder
-    source_dir = directory
-    target_dir= wav_converting
-    createPath(wav_converting)
-
-    for clip in clips_pictures_list:
-        # print(f"Converting clip {clip} to WAV format")
-        filename = f"{cam}{clip}{suffix}"
-        try:
-            shutil.move(os.path.join(source_dir, filename), target_dir)
-        except:
-            pass
-    #extract WAV audio from trimmed videos
-    for trimmed_video in clips_pictures_list:
-        INPUT_TRIMMED_FILE = f"{wav_converting}{inputToOutputNewTrimmed(trimmed_video)}"
-        OUTPUT_WAV = f"{wav_dir}{inputToOutputNewWAV(trimmed_video)}"
-        #convert trimmed mp4 into WAV
-        command = f"ffmpeg -i  {INPUT_TRIMMED_FILE} -hide_banner {OUTPUT_WAV} -loglevel error"
+        command = f'ffmpeg -y -i {in_vid} -filter_complex "[0:v]setpts=PTS*{str(ratio)}[v]" -map "[v]" -shortest {out_vid} -hide_banner -loglevel error'
         subprocess.call(command, shell=True)
 
-    myJPEG = []
-    for file in os.listdir(pic_dir_in):
-        if file.endswith(".jpg") or file.endswith(".jpeg") or file.endswith(".JPG") or file.endswith(".JPEG"):
-            myJPEG.append(file)
-    myJPEG = sorted(myJPEG)
+        deleteFile(original_vid)
 
-    #convert jpg and jpeg to png files
-    for jpg in myJPEG:
-        # print(f"Converting {jpg} to PNG format")
-        INPUT_JPG = f"{pic_dir_in}{jpg}"
-        OUTPUT_PNG = f"{pic_dir_in}{inputToOutputPNG(jpg)}"
-        #convert JPG to PNG
-        command = "ffmpeg -i " + INPUT_JPG + " -hide_banner " + OUTPUT_PNG + " -loglevel error"
-        subprocess.call(command, shell=True)
-
-
-
-    myPictures = []
-    for file in os.listdir(pic_dir_in):
-        if file.endswith(".png"):
-            myPictures.append(file)
-    if not myPictures:
-        print("No input pictures detected")
-    myPictures = sorted(myPictures)
-
-    #rename pictures to matching video
-    def NOPNG(filename):
-        dotIndex = filename.rfind(".")
-        return filename[:dotIndex]
-    images_clips = {y:x for x,y in clips_pictures.items()}
-    for key, value in clips_pictures.items():
-        if value.isdigit:
-            INPUT_PICTURE = f"{pic_dir_in}{value}.png"
-            OUTPUT_PICTURE = f"{pic_dir_in}{cam}{key}.png"
-            copyfile(INPUT_PICTURE, OUTPUT_PICTURE)
-        else:
-            pass
-
-    myWAVFiles = []
-    for file in os.listdir(wav_dir):
-        if file.endswith(".wav") or file.endswith(".WAV"):
-            myWAVFiles.append(file)
-    if not myWAVFiles:
-        print("No input WAVs detected")
-    myWAVFiles = sorted(myWAVFiles)
-
-    # print(myWAVFiles)R
-
-    #attach trimmed_wav_file with PNG picture
-    for file in myWAVFiles:
-        print(f"Attaching picture to {file}")
-        INPUT_WAV = f"{wav_dir}{file}"
-        INPUT_IMAGE = f"{pic_dir_in}{inputToOutputPNG(file)}"
-        OUTPUT_MOV = f"{directory}{inputToOutputMOV(file)}"
-        #combine wav and png to mp4
-        command = f"ffmpeg -loop 1 -y -i {INPUT_IMAGE} -i {INPUT_WAV} -shortest -acodec copy -vcodec png {OUTPUT_MOV} -hide_banner -loglevel error "
-        subprocess.call(command, shell=True)
-
-    deletePath(wav_dir)
-    deletePath(vid_processed)
-    deletePath(wav_converting)
 
 if __name__ == "__main__":
-    attachpictures()
+    # attach_pictures(filesuffix, clips_pictures, layer2)
+    attach_videos(filesuffix, clips_video, layer2)
