@@ -96,4 +96,4 @@ def concat_and_replace (suffix, new_suffix, clips, directory, replacement_footag
 
 if __name__ == "__main__":
     dup_dir(layer3, layer2)
-    concat_and_replace("_TRIMMED.MP4", clips_all_except_pics, layer2, vid_transparency_smol)
+    concat_and_replace("_TRIMMED.MP4", clips_all_except_pics_and_vid, layer2, vid_transparency_smol)
