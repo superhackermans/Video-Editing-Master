@@ -1,8 +1,4 @@
 from parameters import *
-import numpy as np
-from backgroundattacher import *
-import os.path
-
 
 def convertfile(suffix, newsuffix, clips, directory):
     if bool(clips.items) == True:
