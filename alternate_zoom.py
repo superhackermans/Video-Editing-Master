@@ -8,8 +8,8 @@ def altzoom(suffix, clips, directory):
     clips = list(clips.keys())
 
     alterClips = altElement(clips)
-    alterClips = sorted(alterClips[1:-2])
-
+    alterClips = sorted(alterClips[1:-1])
+    st()
     TEMP_FOLDER = "./files/OUTPUT/alterClips/"
     createPath(TEMP_FOLDER)
 
@@ -20,18 +20,10 @@ def altzoom(suffix, clips, directory):
 
     zoomcommand = f'"crop={zoomdimension[0]}:{zoomdimension[1]}:{scale_x}:{scale_y}z"' #no idea why it works with the z. cant figure it out otherwise
 
-
-    source_dir = directory
-    target_dir = TEMP_FOLDER
-
     for clip in alterClips:
         filename = f"{cam}{clip}{suffix}"
-        try:
-            shutil.move(os.path.join(source_dir, filename), target_dir)
-        except:
-            pass
+        move_file(directory, filename, TEMP_FOLDER)
 
-    #extract WAV audio from trimmed videos
     for clip in alterClips:
         filename = f"{cam}{clip}{suffix}"
         print(f"Zooming in {filename}")
@@ -44,4 +36,4 @@ def altzoom(suffix, clips, directory):
     shutil.rmtree(TEMP_FOLDER)
 
 if __name__ == "__main__":
-    altzoom("_TRIMMED.MP4", clips_ben)
+    altzoom(filesuffix, clips_ben, layer4)
