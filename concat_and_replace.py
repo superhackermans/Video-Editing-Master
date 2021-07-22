@@ -48,7 +48,7 @@ def concat_and_replace (suffix, new_suffix, clips, directory, replacement_footag
                 subprocess.call(command, shell=True)
             else:
                 output = f"{directory}{outputfilename}{new_suffix}"
-                command = f"ffmpeg -ss -0 -i {replacement_footage} -t {current_total_len} -c copy {output} -hide_banner -loglevel error"
+                command = f"ffmpeg -ss -0 -i {replacement_footage} -t {current_total_len} {output} -hide_banner -loglevel error"
                 subprocess.call(command, shell=True)
 
             # outputframes = float(get_packets(output))
