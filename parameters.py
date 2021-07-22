@@ -13,19 +13,21 @@ import numpy as np
 cam = "C0"
 filesuffix = "_TRIMMED.MOV"
 
-#File locations
+# File locations
 data_file = "./files/data.txt"
 vid_dir_in = "./files/INPUT/unprocessed_raw_files/"
 cov_dir_in = "./files/INPUT/covers/"
 vid_processed = "./files/OUTPUT/processed_raw_files/"
+pop_up_dir = "./files/INPUT/pop_ups/"
 backuplayer = "./files/OUTPUT/backup_layer/"
+layer00 = "./files/OUTPUT/trimmed_files_2.5_layer/"
 layer0 = "./files/OUTPUT/trimmed_files_0th_layer/"
 layer1 = "./files/OUTPUT/trimmed_files_1st_layer/"
 layer2 = "./files/OUTPUT/trimmed_files_2nd_layer/"
 layer3 = "./files/OUTPUT/trimmed_files_3rd_layer/"
 layer4 = "./files/OUTPUT/trimmed_files_4th_layer/"
 pic_dir_in = "./files/INPUT/pictures/"
-wav_converting = "./files/OUTPUT/convert_to_wav/" #files with pictures to extract audio from
+wav_converting = "./files/OUTPUT/convert_to_wav/"  # files with pictures to extract audio from
 cover_dir_out = "./files/OUTPUT/coverssplit/"
 wav_dir = "./files/OUTPUT/wav_files/"
 pic_dir_out = "./files/OUTPUT/pictures/"
@@ -46,23 +48,24 @@ pic_transparency = "./assets/transparency.png"
 # vid_transparency = "./assets/transparency.mov"
 vid_transparency_smol = "./assets/transparency_smol.mov"
 
-#parameters
+# parameters
 frameRate = 24
 SAMPLE_RATE = 44100
-SILENT_THRESHOLD = 0.07 #0-1. 1 is max volume
-FRAME_SPILL_FRONT = 0 #frames on front side of speech to be included
-FRAME_SPILL_BACK = 2 #frames on back side of speech to be included
-FRAME_SPILL_BACK_FINAL = 5 #frames to include at the very end of the clip
+SILENT_THRESHOLD = 0.07  # 0-1. 1 is max volume
+FRAME_SPILL_FRONT = 0  # frames on front side of speech to be included
+FRAME_SPILL_BACK = 2  # frames on back side of speech to be included
+FRAME_SPILL_BACK_FINAL = 5  # frames to include at the very end of the clip
 silent_speed = 99999999999999
 sounded_speed = 1
 NEW_SPEED = [silent_speed, sounded_speed]
-FRAME_QUALITY = 3 #1 is highest, 31 is lowest
-AUDIO_FADE_ENVELOPE_SIZE = 400 # smooth out transition's audio by quickly fading in/out (arbitrary magic number whatever)
-MAX_SILENCE_PERMITTED = 36 #length of frames permitted to not count as silence
+FRAME_QUALITY = 3  # 1 is highest, 31 is lowest
+AUDIO_FADE_ENVELOPE_SIZE = 400  # smooth out transition's audio by quickly fading in/out (arbitrary magic number whatever)
+MAX_SILENCE_PERMITTED = 36  # length of frames permitted to not count as silence
 
 original_dimensions = 3840, 2160
 scale_factor = .80
 raise_up = 500
+
 
 def group_consecutives(vals, step=1):
     """Return list of consecutive lists of numbers from vals (number list)."""
@@ -77,6 +80,8 @@ def group_consecutives(vals, step=1):
             result.append(run)
         expect = v + step
     return result
+
+
 def jpg_to_png(directory):
     myJPEG = []
     for file in os.listdir(directory):
@@ -91,12 +96,15 @@ def jpg_to_png(directory):
         command = "ffmpeg -i " + INPUT_JPG + " -hide_banner " + OUTPUT_PNG + " -loglevel error"
         subprocess.call(command, shell=True)
 
+
 def dup_dir(directory, directory2):
     try:
         shutil.copytree(directory, directory2)
         print(f"Duplicating {directory}")
     except (FileExistsError, OSError) as e:
         pass
+
+
 def reset():
     deletePath(layer1)
     deletePath(layer2)
@@ -107,81 +115,118 @@ def reset():
     # sec_to_frames(filesuffix, clips_all, layer2)
     dup_dir(layer2, layer3)
     dup_dir(layer3, layer4)
+
+
 def createPath(s):
     try:
         os.mkdir(s)
     except (FileExistsError, OSError) as e:
         pass
+
+
 def deletePath(s):
     try:
-        rmtree(s,ignore_errors=False)
+        rmtree(s, ignore_errors=False)
     except OSError:
-        print ("Deletion of the directory %s failed" % s)
+        print("Deletion of the directory %s failed" % s)
         # print(OSError)
+
+
 def deleteFile(s):
     try:
         os.remove(s)
     except FileNotFoundError:
         pass
+
+
 def copy_directory(directory, newdirectory):
     try:
         shutil.copytree(directory, newdirectory)
     except FileExistsError:
         pass
+
+
 def renamefile(src, dest):
     try:
         os.rename(src, dest)
     except OSError:
         pass
+
+
 def move_file(src, filename, dest):
     try:
         shutil.move(os.path.join(src, filename), dest)
     except:
         pass
 
+
 def nosuffix(filename):
     dotIndex = filename.rfind(".")
     return filename[:dotIndex]
+
+
 def tempclip(filename):
     dotIndex = filename.rfind(".")
-    return filename[:dotIndex]+"TEMP"+filename[dotIndex:]
+    return filename[:dotIndex] + "TEMP" + filename[dotIndex:]
+
+
 def basesuffix(suffix):
     dotIndex = suffix.rfind(".")
     return suffix[dotIndex:]
+
+
 def inputToOutputFilename(filename):
     dotIndex = filename.rfind(".")
-    return filename[:dotIndex]+filesuffix
+    return filename[:dotIndex] + filesuffix
+
+
 def inputToOutputWAV(filename):
     dotIndex = filename.rfind(".")
-    return filename[:dotIndex]+".WAV"
+    return filename[:dotIndex] + ".WAV"
+
+
 def inputToOutputMOV(filename):
     dotIndex = filename.rfind(".")
-    return filename[:dotIndex]+filesuffix
+    return filename[:dotIndex] + filesuffix
+
+
 def inputToOutputPNG(filename):
     dotIndex = filename.rfind(".")
-    return filename[:dotIndex]+".png"
+    return filename[:dotIndex] + ".png"
+
+
 def inputToOutputNewTrimmed(filename):
     return cam + filename + filesuffix
+
+
 def inputToOutputNewWAV(filename):
     return cam + filename + ".WAV"
+
+
 def altElement(a):
     return a[::2]
+
+
 def inputToOutputNewTrimmedAndZoomed(filename):
     return cam + filename + "_TRIMMEDZOOMED.MOV"
+
+
 def convert(suffix, filetype, newfiletype, clips, directory):
-    for k,v in clips.items():
+    for k, v in clips.items():
         input = f"{directory}{cam}{k}{suffix}{filetype}"
         output = f"{directory}{cam}{k}{suffix}{newfiletype}"
         command = f"ffmpeg -i {input} -hide_banner {output} -loglevel error"
         subprocess.call(command, shell=True)
         deleteFile(input)
+
+
 def sec_to_frames(suffix, clips, directory):
     print("Making things frame perfect...")
     for k, v in dict(clips).items():
         INPUTCLIP = f"{directory}{cam}{k}{suffix}"
         TEMP_OUTPUT = f"{directory}{cam}{k}TEMP{suffix}"
         print(f"working on clip {cam}{k}...")
-        filelen = float(get_packets(INPUTCLIP))/frameRate
+        filelen = float(get_packets(INPUTCLIP)) / frameRate
         command = f"ffmpeg -ss -0 -i {INPUTCLIP} -t {filelen}  -c copy  " \
                   f" {TEMP_OUTPUT} -hide_banner -loglevel error"
         subprocess.call(command, shell=True)
@@ -191,6 +236,7 @@ def sec_to_frames(suffix, clips, directory):
 
         deleteFile(INPUTCLIP)
         renamefile(TEMP_OUTPUT, INPUTCLIP)
+
 
 def readfile(file):
     file = open(file)
@@ -208,6 +254,7 @@ def readfile(file):
     file.close()
     return clips_images
 
+
 def get_length(fileloc):
     # filelength = float(get_length(fileloc))
     # get length of a file
@@ -216,12 +263,14 @@ def get_length(fileloc):
     filelength = proc.communicate()[0].decode('utf-8').strip('\n')
     return float(filelength)
 
+
 def get_packets(fileloc):
     # get number of frames in a file
     command = "ffprobe -v error -select_streams v:0 -count_packets -show_entries stream=nb_read_packets -of csv=p=0 " + fileloc + " -hide_banner -loglevel error"
     proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, )
     packets = proc.communicate()[0].decode('utf-8').strip('\n')
     return float(packets)
+
 
 def get_frames(fileloc):
     # get number of frames in a file
@@ -230,15 +279,18 @@ def get_frames(fileloc):
     frames = proc.communicate()[0].decode('utf-8').strip('\n')
     return float(frames)
 
-#make directories if not there
+
+# make directories if not there
 def make_folders():
-    directories = [output_main, vid_dir_in, pic_dir_in, cov_dir_in, data_file, wav_converting, cover_dir_out, layer2]
+    directories = [output_main, vid_dir_in, pic_dir_in, cov_dir_in, pop_up_dir, data_file, wav_converting,
+                   cover_dir_out, layer2]
     for directory in directories:
         try:
             os.mkdir(directory)
         except FileExistsError:
             pass
     deletePath(TEMP_FOLDER)
+
 
 clips_images = readfile(data_file)
 clips_all = {k: v for k, v in clips_images.items()}
@@ -253,20 +305,24 @@ clips_background = {k: v for k, v in clips_images.items() if v.isdigit() or v ==
                     or v == "v1" or v == "v2" or v == "v3" or v == "v4" or v == "v5"}
 clips_toc = {k: v for k, v in clips_images.items() if v == "toc"}
 clips_all_except_pics_and_vid = {k: v for k, v in clips_images.items() if v == "--" or v == "toc"
-                         or v == "c1" or v == "c2" or v == "c3"
-                         or v == "c4" or v == "c5" or v == "c6"
-                         or v == "c7" or v == "c8" or v == "c9"
-                         or v == "c10" or v == "c11" or v == "c12"}
+                                 or v == "c1" or v == "c2" or v == "c3"
+                                 or v == "c4" or v == "c5" or v == "c6"
+                                 or v == "c7" or v == "c8" or v == "c9"
+                                 or v == "c10" or v == "c11" or v == "c12"}
 clips_ben_and_cover = {k: v for k, v in clips_images.items() if v == "--"
-                         or v == "c1" or v == "c2" or v == "c3"
-                         or v == "c4" or v == "c5" or v == "c6"
-                         or v == "c7" or v == "c8" or v == "c9"
-                         or v == "c10" or v == "c11" or v == "c12"}
+                       or v == "c1" or v == "c2" or v == "c3"
+                       or v == "c4" or v == "c5" or v == "c6"
+                       or v == "c7" or v == "c8" or v == "c9"
+                       or v == "c10" or v == "c11" or v == "c12"}
 clips_all_except_cover = {k: v for k, v in clips_images.items() if v != "c1" and v != "c2" and v != "c3"
-               and v != "c4" and v != "c5" and v != "c6"
-               and v != "c7" and v != "c8" and v != "c9"
-               and v != "c10" and v != "c11" and v != "c12"}
+                          and v != "c4" and v != "c5" and v != "c6"
+                          and v != "c7" and v != "c8" and v != "c9"
+                          and v != "c10" and v != "c11" and v != "c12"}
 clips_video = {k: v for k, v in clips_images.items() if v == "v1" or v == "v2" or v == "v3" or v == "v4" or v == "v5"}
+clips_pop_up = {k: v for k, v in clips_images.items() if v == "b1" or v == "b2" or v == "b3"
+                or v == "b4" or v == "b5" or v == "b6"
+                or v == "b7" or v == "b8" or v == "b9"
+                or v == "b10" or v == "b11" or v == "b12"}
 
 if __name__ == "__main__":
     make_folders()
