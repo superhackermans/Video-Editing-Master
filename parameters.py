@@ -250,7 +250,7 @@ clips_cover = {k: v for k, v in clips_images.items() if v == "c1" or v == "c2" o
                or v == "c7" or v == "c8" or v == "c9"
                or v == "c10" or v == "c11" or v == "c12"}
 clips_background = {k: v for k, v in clips_images.items() if v.isdigit() or v == "toc"
-                    or v == "v1" or v == "v2" or v == "v3"} # includes table of contents
+                    or v == "v1" or v == "v2" or v == "v3" or v == "v4" or v == "v5"}
 clips_toc = {k: v for k, v in clips_images.items() if v == "toc"}
 clips_all_except_pics_and_vid = {k: v for k, v in clips_images.items() if v == "--" or v == "toc"
                          or v == "c1" or v == "c2" or v == "c3"
@@ -266,7 +266,7 @@ clips_all_except_cover = {k: v for k, v in clips_images.items() if v != "c1" and
                and v != "c4" and v != "c5" and v != "c6"
                and v != "c7" and v != "c8" and v != "c9"
                and v != "c10" and v != "c11" and v != "c12"}
-clips_video = {k: v for k, v in clips_images.items() if v == "v1" or v == "v2" or v == "v3"}
+clips_video = {k: v for k, v in clips_images.items() if v == "v1" or v == "v2" or v == "v3" or v == "v4" or v == "v5"}
 
 if __name__ == "__main__":
     make_folders()
