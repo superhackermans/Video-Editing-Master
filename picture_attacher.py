@@ -1,9 +1,4 @@
 from parameters import *
-import subprocess
-from shutil import copyfile, rmtree
-import os
-import os.path
-import shutil
 
 def attach_pictures(suffix, clips, directory):
     print("Beginning picture attaching")

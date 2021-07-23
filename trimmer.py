@@ -1,13 +1,5 @@
-import subprocess
-from audiotsm import phasevocoder
-from audiotsm.io.wav import WavReader, WavWriter
-from scipy.io import wavfile
-import numpy as np
-import math
-from shutil import copyfile, rmtree
-import os
-import shutil
 from parameters import *
+import time
 
 def getMaxVolume(s):
     maxv = float(np.max(s))
@@ -25,6 +17,7 @@ def copyFrame(inputFrame,outputFrame):
     return True
 
 def trimmer(output_suffix, directory):
+    start_time = time.time()
     # turn filenames in list
     myVideos = []
     print("Processing: ")
@@ -219,6 +212,7 @@ def trimmer(output_suffix, directory):
         shutil.move(os.path.join(source_dir, video_name), target_dir)
 
     deletePath(vid_processed)
-    print("Finished trimming all files bitch")
+    print(f"Finished trimming in {round((time.time() - start_time) / 60, 2)} minutes. "
+          f"Avg {round(round((time.time() - start_time) / 60, 2)/(len(myVideos)), 2)} minutes per clip.")
 
 # trimmer()

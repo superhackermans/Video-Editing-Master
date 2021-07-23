@@ -1,6 +1,4 @@
 from parameters import *
-import subprocess
-import shutil
 
 def altzoom(suffix, clips, directory):
     #zoom in alternating

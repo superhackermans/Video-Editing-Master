@@ -1,6 +1,4 @@
 from parameters import *
-import subprocess
-from pdb import set_trace as st
 
 def inputToOutputMP4(filename):
     dotIndex = filename.rfind(".")

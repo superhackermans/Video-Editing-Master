@@ -1,6 +1,4 @@
 from parameters import *
-from background_layer import *
-import subprocess
 
 #suffix of the top layer which is to be replaced
 def transitions(suffix, clips_background, directory):

@@ -1,8 +1,5 @@
 from parameters import *
 
-import os, shutil
-
-
 def deletecontents(directory):
     folder = directory
     for filename in os.listdir(folder):

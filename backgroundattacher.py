@@ -1,9 +1,4 @@
-import subprocess
 from parameters import *
-from pdb import set_trace as st
-import shutil
-import os
-
 
 def backgroundattacher(suffix, directory, bg_to_attach):
     # check if dictionary is empty
@@ -62,12 +57,12 @@ def backgroundattacher(suffix, directory, bg_to_attach):
             #     FileNotFoundError
             try:
                 os.remove(f"{directory}C0{key}_TRIMMED.MP4")
-            except:
-                FileNotFoundError
+            except FileNotFoundError:
+                pass
             try:
                 os.remove(f"{directory}C0{key}_TRIMMED.MOV")
-            except:
-                FileNotFoundError
+            except FileNotFoundError:
+                pass
 
             # overlay background on video
 
@@ -87,14 +82,8 @@ def backgroundattacher(suffix, directory, bg_to_attach):
             #     pass
         else:
             pass
-    try:
-        shutil.rmtree(CUTCOVER)
-    except FileNotFoundError:
-        pass
-    try:
-        shutil.rmtree(wav_dir)
-    except FileNotFoundError:
-        pass
+    deletePath(CUTCOVER)
+    deletePath(wav_dir)
 
 
 
