@@ -68,10 +68,11 @@ NEW_SPEED = [silent_speed, sounded_speed]
 FRAME_QUALITY = 3  # 1 is highest, 31 is lowest
 AUDIO_FADE_ENVELOPE_SIZE = 400  # smooth out transition's audio by quickly fading in/out (arbitrary magic number whatever)
 MAX_SILENCE_PERMITTED = 36  # length of frames permitted to not count as silence
+mistake_threshold = 2/3 # if there a mistake past this point, it will not remove
 
 original_dimensions = 3840, 2160
-scale_factor = .80
-raise_up = 500
+scale_factor = .85
+raise_up = 800
 
 
 def group_consecutives(vals, step=1):

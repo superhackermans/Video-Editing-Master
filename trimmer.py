@@ -108,7 +108,7 @@ def trimmer(output_suffix, directory):
         zero_idxs = np.where(arr[1:-1, 2] == 0)[0] + 1      # + 1 to compensate for indexing from 1:
 
         #find midpoint and the frame where silence was found, if there are multiple instances
-        midpointframe = arr[-1, 1]*(2/3)
+        midpointframe = arr[-1, 1]*(mistake_threshold)
         if zero_idxs.shape >= (1,):
             framepointofsilence = arr[zero_idxs[-1], 1]
 
