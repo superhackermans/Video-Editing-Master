@@ -25,7 +25,8 @@ def attachcovers(suffix, clips_cover, directory):
         original_len = get_length(originalfile)
         coverlen = get_length(coverloc)
 
-        ratio = (original_len/coverlen)
+        #ADDED BUFFER OF HALF A FRAME!!!
+        ratio = ((original_len-.5/frameRate)/coverlen)
 
         command = f'ffmpeg -y -i {coverloc} -filter_complex "[0:v]setpts=PTS*{str(ratio)}[v]" -map "[v]" -shortest {final_output} -hide_banner -loglevel error'
         subprocess.call(command, shell=True)
