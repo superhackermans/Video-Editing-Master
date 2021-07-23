@@ -18,9 +18,9 @@ def concat_and_replace (suffix, new_suffix, clips, directory, replacement_footag
                 outputfilename = f"{cam}{group[0]}-C0{group[-1]}"
 
             if replacement_footage == vid_transparency_smol:
-                print(f"Adding transparency to {outputfilename}{new_suffix}")
+                print(f"Adding transparency to {outputfilename}")
             elif replacement_footage == backgroundloc:
-                print(f"Adding background to {outputfilename}{new_suffix}")
+                print(f"Adding background to {outputfilename}")
             else:
                 pass
 
