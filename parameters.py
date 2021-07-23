@@ -8,6 +8,13 @@ import os
 import os.path
 from pdb import set_trace as st
 import numpy as np
+import subprocess
+from audiotsm import phasevocoder
+from audiotsm.io.wav import WavReader, WavWriter
+from scipy.io import wavfile
+import math
+from shutil import copyfile, rmtree
+from pdb import set_trace as st
 
 # camera prefix
 cam = "C0"
@@ -20,19 +27,19 @@ cov_dir_in = "./files/INPUT/covers/"
 vid_processed = "./files/OUTPUT/processed_raw_files/"
 pop_up_dir = "./files/INPUT/pop_ups/"
 backuplayer = "./files/OUTPUT/backup_layer/"
-layer00 = "./files/OUTPUT/trimmed_files_2.5_layer/"
-layer0 = "./files/OUTPUT/trimmed_files_0th_layer/"
-layer1 = "./files/OUTPUT/trimmed_files_1st_layer/"
-layer2 = "./files/OUTPUT/trimmed_files_2nd_layer/"
-layer3 = "./files/OUTPUT/trimmed_files_3rd_layer/"
-layer4 = "./files/OUTPUT/trimmed_files_4th_layer/"
+layer_popups = "./files/OUTPUT/2.5_layer_pop_ups/"
+layer0 = "./files/OUTPUT/0_layer_covers/"
+layer1 = "./files/OUTPUT/1_layer_transitions/"
+layer2 = "./files/OUTPUT/2_layer_pics/"
+layer3 = "./files/OUTPUT/3_layer_background/"
+layer4 = "./files/OUTPUT/4_layer_ben/"
 pic_dir_in = "./files/INPUT/pictures/"
 wav_converting = "./files/OUTPUT/convert_to_wav/"  # files with pictures to extract audio from
 cover_dir_out = "./files/OUTPUT/coverssplit/"
 wav_dir = "./files/OUTPUT/wav_files/"
 pic_dir_out = "./files/OUTPUT/pictures/"
 cover_cut = "./files/OUTPUT/cutcover/"
-output_main = "./files/OUTPUT"
+output_main = "./files/OUTPUT/"
 
 TEMP_FOLDER = "TEMP"
 
@@ -81,7 +88,6 @@ def group_consecutives(vals, step=1):
         expect = v + step
     return result
 
-
 def jpg_to_png(directory):
     myJPEG = []
     for file in os.listdir(directory):
@@ -96,14 +102,12 @@ def jpg_to_png(directory):
         command = "ffmpeg -i " + INPUT_JPG + " -hide_banner " + OUTPUT_PNG + " -loglevel error"
         subprocess.call(command, shell=True)
 
-
 def dup_dir(directory, directory2):
     try:
         shutil.copytree(directory, directory2)
         print(f"Duplicating {directory}")
     except (FileExistsError, OSError) as e:
         pass
-
 
 def reset():
     deletePath(layer1)
@@ -293,36 +297,29 @@ def make_folders():
 
 
 clips_images = readfile(data_file)
-clips_all = {k: v for k, v in clips_images.items()}
-clips_pictures = {k: v for k, v in clips_images.items() if v.isdigit()}
-clips_ben = {k: v for k, v in clips_images.items() if v == "--"}
-clips_bentoc = {k: v for k, v in clips_images.items() if v == "--" or v == "toc"}
-clips_cover = {k: v for k, v in clips_images.items() if v == "c1" or v == "c2" or v == "c3"
-               or v == "c4" or v == "c5" or v == "c6"
-               or v == "c7" or v == "c8" or v == "c9"
-               or v == "c10" or v == "c11" or v == "c12"}
-clips_background = {k: v for k, v in clips_images.items() if v.isdigit() or v == "toc"
-                    or v == "v1" or v == "v2" or v == "v3" or v == "v4" or v == "v5"}
-clips_toc = {k: v for k, v in clips_images.items() if v == "toc"}
-clips_all_except_pics_and_vid = {k: v for k, v in clips_images.items() if v == "--" or v == "toc"
-                                 or v == "c1" or v == "c2" or v == "c3"
-                                 or v == "c4" or v == "c5" or v == "c6"
-                                 or v == "c7" or v == "c8" or v == "c9"
-                                 or v == "c10" or v == "c11" or v == "c12"}
-clips_ben_and_cover = {k: v for k, v in clips_images.items() if v == "--"
-                       or v == "c1" or v == "c2" or v == "c3"
-                       or v == "c4" or v == "c5" or v == "c6"
-                       or v == "c7" or v == "c8" or v == "c9"
-                       or v == "c10" or v == "c11" or v == "c12"}
-clips_all_except_cover = {k: v for k, v in clips_images.items() if v != "c1" and v != "c2" and v != "c3"
-                          and v != "c4" and v != "c5" and v != "c6"
-                          and v != "c7" and v != "c8" and v != "c9"
-                          and v != "c10" and v != "c11" and v != "c12"}
-clips_video = {k: v for k, v in clips_images.items() if v == "v1" or v == "v2" or v == "v3" or v == "v4" or v == "v5"}
 clips_pop_up = {k: v for k, v in clips_images.items() if v == "b1" or v == "b2" or v == "b3"
                 or v == "b4" or v == "b5" or v == "b6"
                 or v == "b7" or v == "b8" or v == "b9"
                 or v == "b10" or v == "b11" or v == "b12"}
+clips_cover = {k: v for k, v in clips_images.items() if v == "c1" or v == "c2" or v == "c3"
+               or v == "c4" or v == "c5" or v == "c6"
+               or v == "c7" or v == "c8" or v == "c9"
+               or v == "c10" or v == "c11" or v == "c12"}
+clips_video = {k: v for k, v in clips_images.items() if
+               v == "v1" or v == "v2" or v == "v3" or v == "v4" or v == "v5"}
+clips_all = {k: v for k, v in clips_images.items()}
+clips_pictures = {k: v for k, v in clips_images.items() if v.isdigit()}
+clips_ben = {k: v for k, v in clips_images.items() if v == "--" or v in clips_pop_up.values()}
+clips_bentoc = {k: v for k, v in clips_images.items() if v in clips_ben.values() or v == "toc"}
+clips_background = {k: v for k, v in clips_images.items() if v == "toc"
+                    or v in clips_video.values() or v in clips_pictures.values()}
+clips_toc = {k: v for k, v in clips_images.items() if v == "toc"}
+clips_all_except_pics_and_vid = {k: v for k, v in clips_images.items() if
+                                 v not in clips_pictures.values() and v not in clips_video.values()}
+clips_ben_and_cover = {k: v for k, v in clips_images.items() if
+                       v in clips_cover.values() or v in clips_ben.values()}
+clips_all_except_cover = {k: v for k, v in clips_images.items() if v not in clips_cover.values()}
+clips_except_popups = {k: v for k, v in clips_images.items() if v not in clips_pop_up.values()}
 
 if __name__ == "__main__":
     make_folders()
