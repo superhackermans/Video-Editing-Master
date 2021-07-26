@@ -26,5 +26,5 @@ def count_frames(directory):
     print(f"total_len for {directory} is {round(total_len, 3)}")
 
 if __name__ == '__main__':
-    for layer in some_layers:
+    for layer in all_layers:
         count_frames(layer)

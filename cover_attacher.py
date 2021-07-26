@@ -9,10 +9,10 @@ def inputToOutputNewWAV(filename):
 def inputToOutputFilenameTRANSITION(filename):
     return cam+filename+"_transition.MOV"
 
-def attachcovers(suffix, clips_cover, directory):
+def attach_covers(suffix, clips, directory):
     # find which clips have cover pages
 
-    for key, value in clips_cover.items():
+    for key, value in clips.items():
 
         filename = f"{cam}{key}{suffix}"
         originalfile = f"{layer4}{filename}"
@@ -41,14 +41,14 @@ def attachcovers(suffix, clips_cover, directory):
             print(f"filelength of layer 3 clip is {original_frames} frames")
             print(f"The discrepancy is {frame_len - original_frames} frames")
 
-def attachsidecovers(suffix, clips_cover, directory):
+def attach_side_covers(suffix, clips, directory):
 
-    buffer = 1/24
+    buffer = 1/frameRate
 
     print("Attaching sides of covers")
     #make wav directory
 
-    for key, value in clips_cover.items():
+    for key, value in clips.items():
         # brightness = "0.00"
         # saturation = "0.03"
         #name everything
@@ -95,12 +95,23 @@ def attachsidecovers(suffix, clips_cover, directory):
         copyfile(coverbehindloc, final_output_b2)
         copyfile(coverforwardloc, final_output_f2)
 
+def outro_attacher(suffix, clips, directory):
+    clips = list(clips.items())
+    last_clip_loc = f"{directory}{cam}{clips[-1][0]}{suffix}"
+    last_clip_len = get_length(last_clip_loc)
+    cutamt = .5
+    command = f"ffmpeg -ignore_chapters 1 -y -i {last_clip_loc} -vcodec qtrle -ss 0 -t {last_clip_len-cutamt} {tempclip(last_clip_loc)} -hide_banner -loglevel error"
+    subprocess.call(command, shell=True)
+    deleteFile(last_clip_loc)
+    renamefile(tempclip(last_clip_loc), last_clip_loc)
 
-
+    outro_clip = f"{directory}{cam}{clips([-1]+1)[0]}{suffix}"
+    copyfile(outro, outro_clip)
 
 if __name__ == '__main__':
-    # attachcovers(clips_cover)
-    attachsidecovers("_TRIMMEDEMPTY.MOV", clips_cover, layer1)
+
+    # attachcovers(clips)
+    attach_side_covers("_TRIMMEDEMPTY.MOV", clips, layer1)
 
 
 

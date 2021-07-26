@@ -27,10 +27,11 @@ cov_dir_in = "./files/INPUT/covers/"
 vid_processed = "./files/OUTPUT/processed_raw_files/"
 pop_up_dir = "./files/INPUT/pop_ups/"
 backuplayer = "./files/OUTPUT/backup_layer/"
-layer_popups = "./files/OUTPUT/2.5_layer_pop_ups/"
 layer0 = "./files/OUTPUT/0_layer_covers/"
 layer1 = "./files/OUTPUT/1_layer_transitions/"
+layer_popups = "./files/OUTPUT/2.5_layer_pop_ups/"
 layer2 = "./files/OUTPUT/2_layer_pics/"
+layer_toc = "./files/OUTPUT/3.5_toc/"
 layer3 = "./files/OUTPUT/3_layer_background/"
 layer4 = "./files/OUTPUT/4_layer_ben/"
 pic_dir_in = "./files/INPUT/pictures/"
@@ -54,6 +55,8 @@ backgroundloc = "./assets/BORDER.MOV"
 pic_transparency = "./assets/transparency.png"
 # vid_transparency = "./assets/transparency.mov"
 vid_transparency_smol = "./assets/transparency_smol.mov"
+outro = "./assets/outro.mov"
+toc_loc = "{pop_up_dir}toc.mov"
 
 # parameters
 frameRate = 24
@@ -72,7 +75,7 @@ mistake_threshold = 2/3 # if there a mistake past this point, it will not remove
 
 original_dimensions = 3840, 2160
 scale_factor = .85
-raise_up = 800
+raise_up = 0
 
 
 def group_consecutives(vals, step=1):
@@ -100,7 +103,7 @@ def jpg_to_png(directory):
         INPUT_JPG = f"{directory}{jpg}"
         OUTPUT_PNG = f"{directory}{inputToOutputPNG(jpg)}"
         # convert JPG to PNG
-        command = "ffmpeg -i " + INPUT_JPG + " -hide_banner " + OUTPUT_PNG + " -loglevel error"
+        command = "ffmpeg -y -i " + INPUT_JPG + " -hide_banner " + OUTPUT_PNG + " -loglevel error"
         subprocess.call(command, shell=True)
 
 def dup_dir(directory, directory2):
@@ -116,6 +119,8 @@ def reset():
     deletePath(layer3)
     deletePath(layer4)
     deletePath(layer0)
+    deletePath(layer_popups)
+    deletePath(layer_toc)
     dup_dir(backuplayer, layer2)
     # sec_to_frames(filesuffix, clips_all, layer2)
     dup_dir(layer2, layer3)
@@ -213,7 +218,7 @@ def altElement(a):
 
 
 def inputToOutputNewTrimmedAndZoomed(filename):
-    return cam + filename + "_TRIMMEDZOOMED.MOV"
+    return cam + filename + "_TRIMMED.MOV"
 
 
 def convert(suffix, filetype, newfiletype, clips, directory):
@@ -251,8 +256,6 @@ def readfile(file):
     for line in file:
         splitLine = line.split("\t")
         clips.append(splitLine[0].zfill(3))
-        if len(splitLine[1]) > 9:
-            splitLine[1] = "--"
         images.append(splitLine[1].strip())
         images = [i.replace('Photo ', '') for i in images]
     clips_images = dict(zip(clips, images))
@@ -310,17 +313,19 @@ clips_video = {k: v for k, v in clips_images.items() if
                v == "v1" or v == "v2" or v == "v3" or v == "v4" or v == "v5"}
 clips_all = {k: v for k, v in clips_images.items()}
 clips_pictures = {k: v for k, v in clips_images.items() if v.isdigit()}
+clips_mult_pics = {k: v for k, v in clips_images.items() if "," in v}
 clips_ben = {k: v for k, v in clips_images.items() if v == "--" or v in clips_pop_up.values()}
 clips_bentoc = {k: v for k, v in clips_images.items() if v in clips_ben.values() or v == "toc"}
 clips_background = {k: v for k, v in clips_images.items() if v == "toc"
-                    or v in clips_video.values() or v in clips_pictures.values()}
+                    or v in clips_video.values() or v in clips_pictures.values() or v in clips_mult_pics.values()}
 clips_toc = {k: v for k, v in clips_images.items() if v == "toc"}
 clips_all_except_pics_and_vid = {k: v for k, v in clips_images.items() if
-                                 v not in clips_pictures.values() and v not in clips_video.values()}
+                                 v not in clips_pictures.values() and v not in clips_video.values() and v not in clips_mult_pics.values()}
 clips_ben_and_cover = {k: v for k, v in clips_images.items() if
                        v in clips_cover.values() or v in clips_ben.values()}
 clips_all_except_cover = {k: v for k, v in clips_images.items() if v not in clips_cover.values()}
 clips_except_popups = {k: v for k, v in clips_images.items() if v not in clips_pop_up.values()}
 
 if __name__ == "__main__":
+    st()
     make_folders()

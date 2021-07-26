@@ -33,15 +33,15 @@ def splitcovers(directory):
         OUTPUT_COVER3 = f"{cover_dir_out}{inputToOutputFilenameEND(cover)}"
 
         #-ss 0 -t 1 are start and length, respectively
-        command = f"ffmpeg -ignore_chapters 1 -i {INPUT_COVER} -vcodec qtrle -ss 0 -t 1 {OUTPUT_COVER1} -hide_banner -loglevel error"
+        command = f"ffmpeg -y -ignore_chapters 1 -i {INPUT_COVER} -vcodec qtrle -ss 0 -t 1 {OUTPUT_COVER1} -hide_banner -loglevel error"
                   # f" -c:v libx264 -strict -2 " \
         subprocess.call(command, shell=True)
 
-        command = f"ffmpeg -ignore_chapters 1 -i {INPUT_COVER}  -vcodec qtrle -ss 1 -t 5.83 {OUTPUT_COVER2} -hide_banner -loglevel error"
+        command = f"ffmpeg -y -ignore_chapters 1 -i {INPUT_COVER}  -vcodec qtrle -ss 1 -t 5.83 {OUTPUT_COVER2} -hide_banner -loglevel error"
                   # f" -c:v libx264 -strict -2 " \
         subprocess.call(command, shell=True)
 
-        command = f"ffmpeg -ignore_chapters 1 -i {INPUT_COVER}  -vcodec qtrle -ss 6.83 -t 1 {OUTPUT_COVER3} -hide_banner -loglevel error"
+        command = f"ffmpeg -y -ignore_chapters 1 -i {INPUT_COVER}  -vcodec qtrle -ss 6.83 -t 1 {OUTPUT_COVER3} -hide_banner -loglevel error"
                   # f" -c:v libx264 -strict -2 " \
         subprocess.call(command, shell=True)
 

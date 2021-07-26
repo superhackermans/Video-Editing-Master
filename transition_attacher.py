@@ -16,6 +16,8 @@ def transitions(suffix, clips_background, directory):
             clips_background[k] = "104"
         if v == "v5":
             clips_background[k] = "105"
+        if "," in v:
+            clips_background[k] = "106"
     clips_background = {int(k):int(v) for k, v in clips_background.items()}
 
     # connect consecutive clips

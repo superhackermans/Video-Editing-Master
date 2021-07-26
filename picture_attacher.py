@@ -19,10 +19,27 @@ def attach_pictures(suffix, clips, directory):
         INPUT_IMAGE = f"{pic_dir_in}{cam}{key}.png"
         OUTPUT_MOV = f"{directory}{cam}{key}{suffix}"
         filelen = float(get_length(OUTPUT_MOV))
-        command = f"ffmpeg -loop 1 -y -i {INPUT_IMAGE} -c copy -t {filelen} {OUTPUT_MOV} -hide_banner -loglevel error "
+        command = f"ffmpeg -loop 1 -y -i {INPUT_IMAGE} -vcodec qtrle -t {filelen} {OUTPUT_MOV} -hide_banner -loglevel error "
         subprocess.call(command, shell=True)
 
         deleteFile(OUTPUT_PICTURE)
+
+def attach_multiple_pictures(suffix, clips, directory):
+    for key, value in clips.items():
+        pics = value.split(",")
+        original_mov = f"{directory}{cam}{key}{suffix}"
+        n = 1
+        for pic in pics:
+            pic.strip()
+            picture = f"{pic_dir_in}{pic}.png"
+            output_mov = f"{directory}{cam}{key}_{n}{suffix}"
+            filelen = (get_packets(original_mov)/len(pics))/frameRate
+            print(f"Attaching picture to {cam}{key}{suffix} (pic {pic}.png)")
+            command = f"ffmpeg -loop 1 -y -i {picture} -vcodec qtrle -t {filelen} {output_mov} -hide_banner -loglevel error "
+            n = n+1
+
+            subprocess.call(command, shell=True)
+        deleteFile(original_mov)
 
 def attach_videos(suffix, clips, directory):
     for k, v in clips.items():
@@ -48,4 +65,5 @@ def attach_videos(suffix, clips, directory):
 
 if __name__ == "__main__":
     # attach_pictures(filesuffix, clips_pictures, layer2)
-    attach_videos(filesuffix, clips_video, layer2)
+    attach_multiple_pictures(filesuffix, clips_mult_pics, layer2)
+    # attach_videos(filesuffix, clips_video, layer2)
