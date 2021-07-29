@@ -12,10 +12,10 @@ def concat_and_replace (suffix, new_suffix, clips, directory, replacement_footag
             createPath(cover_cut)
             createPath(wav_dir)
 
-            if str(group[0]).zfill == str(group[-1]).zfill:
-                outputfilename = f"{cam}{str(group[0]).zfill}"
+            if str(group[0]).zfill(4) == str(group[-1]).zfill(4):
+                outputfilename = f"{cam}{str(str(group[0]).zfill(4))}"
             else:
-                outputfilename = f"{cam}{str(group[0]).zfill}-{cam}{str(group[-1]).zfill}"
+                outputfilename = f"{cam}{str(str(group[0]).zfill(4))}-{cam}{str(str(group[-1]).zfill(4))}"
 
             if replacement_footage == vid_transparency_smol:
                 print(f"Adding transparency to {outputfilename}")
@@ -23,24 +23,16 @@ def concat_and_replace (suffix, new_suffix, clips, directory, replacement_footag
                 print(f"Adding background to {outputfilename}")
             else:
                 pass
-
             # lens = []
             frames = []
             for i in group:
-                fileloc = f"{directory}{cam}{i}{suffix}"
-                # filelen = float(get_length(fileloc))
-                # lens.append(filelen)
+                fileloc = f"{directory}{cam}{str(i).zfill(4)}{suffix}"
                 packets = float(get_packets(fileloc))
                 frames.append(packets)
-                # print(f"frames by length is {filelen*frameRate}")
-                # print(f"frames by frame is {packets}")
                 deleteFile(fileloc)
 
-            # current_total_len = sum(lens)
-            # print(f"Current total len is {current_total_len}")
             desired_frames = float(sum(frames))
             current_total_len = float(desired_frames/frameRate)
-            # print(f"Current total len is {current_total_len}")
 
             if replacement_footage == vid_transparency_smol:
                 output = f"{directory}{outputfilename}{new_suffix}"
@@ -51,49 +43,8 @@ def concat_and_replace (suffix, new_suffix, clips, directory, replacement_footag
                 command = f"ffmpeg -ss -0 -i {replacement_footage} -t {current_total_len} {output} -hide_banner -loglevel error"
                 subprocess.call(command, shell=True)
 
-            # outputframes = float(get_packets(output))
-            # framediscrepancy = float(outputframes-desired_frames)
-            # if framediscrepancy == 0:
-            #     pass
-            # else:
-            #     while framediscrepancy>.5:
-            #         adjustment = .051
-            #         current_total_len = float(outputframes/frameRate-(adjustment))
-            #
-            #         print(f"Total frames is now {outputframes}. Desired frames is {desired_frames}")
-            #         print(f"There is a discrepancy of {framediscrepancy} frame(s). Trimming clip.")
-            #         print(f"Adjustment is {adjustment}")
-            #         print(f"Readjusting to {current_total_len * frameRate}.")
-            #
-            #         output = f"{directory}{outputfilename}{new_suffix}"
-            #         command = f"ffmpeg -y -ss -0 -i {replacement_footage} -t {current_total_len} {output} -hide_banner -loglevel error"
-            #         subprocess.call(command, shell=True)
-            #
-            #         outputframes = float(get_packets(output))
-            #         framediscrepancy = float(outputframes-desired_frames)
-            #     while framediscrepancy<-.5:
-            #         adjustment = -.051
-            #         current_total_len = float(outputframes/frameRate-(adjustment))
-            #
-            #         print(f"Total frames is now {outputframes}. Desired frames is {desired_frames}")
-            #         print(f"There is a discrepancy of {framediscrepancy} frame(s). Extending clip.")
-            #         print(f"Adjustment is {adjustment}")
-            #         print(f"Readjusting to {current_total_len * frameRate}.")
-            #
-            #         output = f"{directory}{outputfilename}{new_suffix}"
-            #         command = f"ffmpeg -y -ss -0 -i {replacement_footage} -t {current_total_len} {output} -hide_banner -loglevel error"
-            #         subprocess.call(command, shell=True)
-            #
-            #         outputframes = float(get_packets(output))
-            #         framediscrepancy = float(outputframes-desired_frames)
-            #     print(f"The discrepancy is {framediscrepancy} frame(s).")
-
-            # #from pic
-            # output = f"{directory}{outputfilename}pic{new_suffix}"
-            # command = f"ffmpeg -loop 1 -i {pic_transparency} -t {totallen} {output} -hide_banner -loglevel error "
-            # subprocess.call(command, shell=True)
 
 
 if __name__ == "__main__":
-    dup_dir(layer3, layer2)
-    concat_and_replace("_TRIMMED.MP4", clips_all_except_pics_and_vid, layer2, vid_transparency_smol)
+    # dup_dir(layer3, layer2)
+    concat_and_replace(filesuffix, filesuffix, clips_except_popups, layer_popups, vid_transparency_smol)

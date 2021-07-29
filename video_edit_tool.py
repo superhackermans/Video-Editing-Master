@@ -36,7 +36,7 @@ def main():
   if x == "e":
       reset()
 
-      splitcovers(cov_dir_in)
+      # splitcovers(cov_dir_in)
 
       if bool(clips_pop_up) == True:
           bottom_pop_ups(clips_pop_up, layer_popups)
@@ -61,9 +61,9 @@ def main():
       attach_side_covers(filesuffix, clips_cover, layer0)
       outro_attacher(filesuffix, clips_all, layer0)
 
+      transitions(filesuffix, clips_background, layer1)
       concat_and_replace(filesuffix, filesuffix, clips_background, layer1, vid_transparency_smol)
       concat_and_replace(filesuffix, filesuffix, clips_ben, layer1, vid_transparency_smol)
-      transitions(filesuffix, clips_background, layer1)
 
       deletePath(wav_dir)
       deletePath(cover_cut)

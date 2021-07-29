@@ -109,6 +109,7 @@ def trimmer(output_suffix, directory):
 
         #find midpoint and the frame where silence was found, if there are multiple instances
         midpointframe = arr[-1, 1]*(mistake_threshold)
+        st()
         if zero_idxs.shape >= (1,):
             framepointofsilence = arr[zero_idxs[-1], 1]
 

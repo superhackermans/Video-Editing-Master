@@ -17,7 +17,7 @@ def bottom_pop_ups(clips, directory):
         video_len = get_length(video_loc)
 
         cutamt = 0/frameRate
-
+        # print(pop_up_len, video_len)
         if pop_up_len>video_len:
             ratio = ((video_len-1/frameRate) / pop_up_len)
             command = f'ffmpeg -y -i {pop_up_loc} -filter_complex "[0:v]setpts=PTS*{str(ratio)}[v]" -map "[v]" -vcodec qtrle -shortest {video_loc} -hide_banner -loglevel error'
@@ -29,7 +29,7 @@ def bottom_pop_ups(clips, directory):
             subprocess.call(command, shell=True)
             deleteFile(forward_video_loc)
             renamefile(tempclip(forward_video_loc), forward_video_loc)
-        elif video_len<pop_up_len:
+        elif pop_up_len<video_len:
             command = f"ffmpeg -ignore_chapters 1 -y -i {video_loc} -vcodec qtrle -ss 0 -t {video_len-pop_up_len-cutamt} {tempclip(video_loc)} -hide_banner -loglevel error"
             subprocess.call(command, shell=True)
             deleteFile(video_loc)

@@ -46,7 +46,6 @@ def transitions(suffix, clips_background, directory):
                 workingfiles = f"{cam}{str(group[0]).zfill(4)}{suffix}"
             else:
                 workingfiles = f"{cam}{str(group[0]).zfill(4)}{suffix} to {cam}{str(group[-1]).zfill(4)}{suffix}"
-            st()
             print(f"Attaching transitions to {workingfiles}")
 
             transition_in_2 = f"{cam}{str(group[0]).zfill(4)}{suffix}"
