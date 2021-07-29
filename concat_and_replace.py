@@ -12,10 +12,10 @@ def concat_and_replace (suffix, new_suffix, clips, directory, replacement_footag
             createPath(cover_cut)
             createPath(wav_dir)
 
-            if group[0] == group[-1]:
-                outputfilename = f"{cam}{group[0]}"
+            if str(group[0]).zfill == str(group[-1]).zfill:
+                outputfilename = f"{cam}{str(group[0]).zfill}"
             else:
-                outputfilename = f"{cam}{group[0]}-{cam}{group[-1]}"
+                outputfilename = f"{cam}{str(group[0]).zfill}-{cam}{str(group[-1]).zfill}"
 
             if replacement_footage == vid_transparency_smol:
                 print(f"Adding transparency to {outputfilename}")

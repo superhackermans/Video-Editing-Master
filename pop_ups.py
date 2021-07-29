@@ -23,7 +23,7 @@ def bottom_pop_ups(clips, directory):
             command = f'ffmpeg -y -i {pop_up_loc} -filter_complex "[0:v]setpts=PTS*{str(ratio)}[v]" -map "[v]" -vcodec qtrle -shortest {video_loc} -hide_banner -loglevel error'
             subprocess.call(command, shell=True)
             # cut 1 frame off forward clip
-            forward_video_loc = f"{directory}{cam}{str(int(k)+1)}{filesuffix}"
+            forward_video_loc = f"{directory}{cam}{str(int(k)+1).zfill(4)}{filesuffix}"
             forward_video_len = get_length(forward_video_loc)
             command = f"ffmpeg -ignore_chapters 1 -y -i {forward_video_loc} -vcodec qtrle -ss 0 -t {forward_video_len-cutamt} {tempclip(forward_video_loc)} -hide_banner -loglevel error"
             subprocess.call(command, shell=True)

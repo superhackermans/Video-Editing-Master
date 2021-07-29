@@ -36,7 +36,7 @@ def main():
   if x == "e":
       reset()
 
-      # splitcovers(cov_dir_in)
+      splitcovers(cov_dir_in)
 
       if bool(clips_pop_up) == True:
           bottom_pop_ups(clips_pop_up, layer_popups)
@@ -76,4 +76,4 @@ def main():
 
 
 if __name__ == '__main__':
-  main()
+    main()

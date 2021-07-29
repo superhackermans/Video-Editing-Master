@@ -12,8 +12,8 @@ def slow_zoom(suffix, clips, directory):
 
     clips = list(clips.items())
 
-    first_clip_loc = f"{directory}{cam}{clips[0][0]}{suffix}"
-    last_clip_loc = f"{directory}{cam}{clips[-1][0]}{suffix}"
+    first_clip_loc = f"{directory}{cam}{str(clips[0][0]).zfill(4)}{suffix}"
+    last_clip_loc = f"{directory}{cam}{str(clips[-1][0]).zfill(4)}{suffix}"
 
     def zoom(inorout, clip_loc):
         print(f"Implementing slow zoom {inorout} on {clip_loc}")
@@ -49,7 +49,7 @@ def slow_zoom(suffix, clips, directory):
 def fade_out(suffix, clips, directory):
     clips = list(clips.items())
 
-    last_clip_loc = f"{directory}{cam}{clips[-1][0]}{suffix}"
+    last_clip_loc = f"{directory}{cam}{str(clips[-1][0]).zfill(4)}{suffix}"
     tempfile = tempclip(last_clip_loc)
     print(f"Fading out {last_clip_loc}")
     fadeduration = 1
@@ -61,5 +61,5 @@ def fade_out(suffix, clips, directory):
     renamefile(tempfile, last_clip_loc)
 
 if __name__ == "__main__":
-    slow_zoom(filesuffix, clips_ben, layer4)
-    fade_out(filesuffix, clips_ben, layer4)
+    slow_zoom(filesuffix, clips_ben, backuplayer)
+    fade_out(filesuffix, clips_ben, backuplayer)

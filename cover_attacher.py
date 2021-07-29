@@ -52,8 +52,8 @@ def attach_side_covers(suffix, clips, directory):
         # brightness = "0.00"
         # saturation = "0.03"
         #name everything
-        behindfilenum = str(int(key)-1)
-        forwardfilenum = str(int(key)+1)
+        behindfilenum = str(int(key)-1).zfill(4)
+        forwardfilenum = str(int(key)+1).zfill(4)
         behindfile = f"{cam}{behindfilenum}{suffix}"
         forwardfile = f"{cam}{forwardfilenum}{suffix}"
         behindfileloc = f"{directory}{behindfile}"
@@ -106,7 +106,7 @@ def outro_attacher(suffix, clips, directory):
     deleteFile(last_clip_loc)
     renamefile(tempclip(last_clip_loc), last_clip_loc)
 
-    outro_clip = f"{directory}{cam}{str(int(clips[-1][0])+1)}{suffix}"
+    outro_clip = f"{directory}{cam}{str(int(clips[-1][0])+1).zfill(4)}{suffix}"
     copyfile(outro, outro_clip)
 
 if __name__ == '__main__':
