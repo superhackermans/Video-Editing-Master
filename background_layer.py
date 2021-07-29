@@ -16,10 +16,10 @@ def add_transparency(suffix, newsuffix, clips, directory):
     # print("Adding transparency to top layer files (OUTPUT/trimmed_files/)")
 
     for k, v in dict(clips).items():
-        filename = f"C0{k}{suffix}"
+        filename = f"{cam}{k}{suffix}"
         print(f"Adding transparency to {filename}")
         INPUT_TRIMMED_FILE = f"{directory}{filename}"
-        FINAL_OUTPUT = f"{directory}C0TEMP{k}{newsuffix}"
+        FINAL_OUTPUT = f"{directory}{cam}TEMP{k}{newsuffix}"
         totallen = float(get_packets(INPUT_TRIMMED_FILE))/frameRate
 
         command = f"ffmpeg -ss -0 -i {vid_transparency_smol} -t {totallen} -c copy " \
@@ -55,7 +55,7 @@ def replace_footage(suffix, clips_background, directory, replacement_footage):
             with open(text_file, 'w') as fp:
                 pass
             for j in group:
-                TRIMMED_LOC = f"{directory}C0{j}{suffix}"
+                TRIMMED_LOC = f"{directory}{cam}{j}{suffix}"
 
                 #write it into the text file
 
@@ -63,9 +63,9 @@ def replace_footage(suffix, clips_background, directory, replacement_footage):
                     file.write(f"file '{TRIMMED_LOC}'\n")
 
             if group[0] == group[-1]:
-                outputfilename = f"C0{group[0]}"
+                outputfilename = f"{cam}{group[0]}"
             else:
-                outputfilename = f"C0{group[0]}-C0{group[-1]}"
+                outputfilename = f"{cam}{group[0]}-{cam}{group[-1]}"
             outputnobgloc = f"{directory}{outputfilename}.MOV"
             outputbgloc =  f"{directory}{outputfilename}_bg.MOV"
             outputbglocfinal = f"{directory}{outputfilename}bg.MOV"
@@ -112,7 +112,6 @@ def replace_footage(suffix, clips_background, directory, replacement_footage):
 
             for j in group:
                 TRIMMED_LOC = f"{directory}{cam}{j}{suffix}"
-                # WAV_LOC = f"{directory}C0{j}_TRIMMED.WAV"
                 deleteFile(TRIMMED_LOC)
 
             deleteFile(text_file)

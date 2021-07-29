@@ -3,10 +3,10 @@ from parameters import *
 def backgroundattacher(suffix, directory, bg_to_attach):
     # check if dictionary is empty
     for key, value in bg_to_attach.items():
-        filename = f"C0{key}{suffix}"
+        filename = f"{cam}{key}{suffix}"
         backgroundloc = "./assets/BORDER.mp4"
-        FINAL_OUTPUT = f"{directory}C0{key}_TRIMMED_bg.MP4"
-        FINALFINAL_OUTPUT = f"{directory}C0{key}_TRIMMEDBG.MP4"
+        FINAL_OUTPUT = f"{directory}{cam}{key}_TRIMMED_bg.MP4"
+        FINALFINAL_OUTPUT = f"{directory}{cam}{key}_TRIMMEDBG.MP4"
 
         INPUT_TRIMMED_FILE = f"{directory}{filename}"
         if os.path.isfile(INPUT_TRIMMED_FILE) == True:
@@ -56,11 +56,11 @@ def backgroundattacher(suffix, directory, bg_to_attach):
             # except:
             #     FileNotFoundError
             try:
-                os.remove(f"{directory}C0{key}_TRIMMED.MP4")
+                os.remove(f"{directory}{cam}{key}_TRIMMED.MP4")
             except FileNotFoundError:
                 pass
             try:
-                os.remove(f"{directory}C0{key}_TRIMMED.MOV")
+                os.remove(f"{directory}{cam}{key}_TRIMMED.MOV")
             except FileNotFoundError:
                 pass
 

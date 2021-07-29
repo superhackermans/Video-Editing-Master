@@ -96,6 +96,7 @@ def attach_side_covers(suffix, clips, directory):
         copyfile(coverforwardloc, final_output_f2)
 
 def outro_attacher(suffix, clips, directory):
+    print("Attaching outro to end of cover layer")
     clips = list(clips.items())
     last_clip_loc = f"{directory}{cam}{clips[-1][0]}{suffix}"
     last_clip_len = get_length(last_clip_loc)
@@ -105,13 +106,13 @@ def outro_attacher(suffix, clips, directory):
     deleteFile(last_clip_loc)
     renamefile(tempclip(last_clip_loc), last_clip_loc)
 
-    outro_clip = f"{directory}{cam}{clips([-1]+1)[0]}{suffix}"
+    outro_clip = f"{directory}{cam}{str(int(clips[-1][0])+1)}{suffix}"
     copyfile(outro, outro_clip)
 
 if __name__ == '__main__':
-
-    # attachcovers(clips)
-    attach_side_covers("_TRIMMEDEMPTY.MOV", clips, layer1)
+    dup_dir(backuplayer, layer0)
+    outro_attacher(filesuffix, clips_all, layer0)
+    # attach_side_covers("_TRIMMEDEMPTY.MOV", clips, layer1)
 
 
 

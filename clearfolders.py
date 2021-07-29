@@ -20,7 +20,7 @@ if __name__ == '__main__':
     x = input()
 
     input_directories = [vid_dir_in, pic_dir_in,
-                         cov_dir_in, data_file]
+                         cov_dir_in, data_file, pop_up_dir]
     output_directories = [layer2, wav_converting,
                           cover_dir_out, pic_dir_out, ]
     delete_directories = [wav_dir, pic_dir_out, layer1,

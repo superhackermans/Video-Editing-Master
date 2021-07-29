@@ -17,7 +17,7 @@ from shutil import copyfile, rmtree
 from pdb import set_trace as st
 
 # camera prefix
-cam = "C0"
+cam = "C"
 filesuffix = "_TRIMMED.MOV"
 
 # File locations
@@ -255,7 +255,7 @@ def readfile(file):
 
     for line in file:
         splitLine = line.split("\t")
-        clips.append(splitLine[0].zfill(3))
+        clips.append(splitLine[0].zfill(4))
         images.append(splitLine[1].strip())
         images = [i.replace('Photo ', '') for i in images]
     clips_images = dict(zip(clips, images))
@@ -325,6 +325,8 @@ clips_ben_and_cover = {k: v for k, v in clips_images.items() if
                        v in clips_cover.values() or v in clips_ben.values()}
 clips_all_except_cover = {k: v for k, v in clips_images.items() if v not in clips_cover.values()}
 clips_except_popups = {k: v for k, v in clips_images.items() if v not in clips_pop_up.values()}
+clips_all_except_cover_and_last = {k: v for k, v in clips_images.items() if v in clips_all_except_cover.values() and k not in [*clips_images.keys()][-1]}
+
 
 if __name__ == "__main__":
     st()

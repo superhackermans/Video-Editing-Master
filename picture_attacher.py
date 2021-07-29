@@ -18,7 +18,7 @@ def attach_pictures(suffix, clips, directory):
         print(f"Attaching picture to {cam}{key}{suffix}")
         INPUT_IMAGE = f"{pic_dir_in}{cam}{key}.png"
         OUTPUT_MOV = f"{directory}{cam}{key}{suffix}"
-        filelen = float(get_length(OUTPUT_MOV))
+        filelen = float(get_packets(OUTPUT_MOV))/frameRate
         command = f"ffmpeg -loop 1 -y -i {INPUT_IMAGE} -vcodec qtrle -t {filelen} {OUTPUT_MOV} -hide_banner -loglevel error "
         subprocess.call(command, shell=True)
 
@@ -30,16 +30,26 @@ def attach_multiple_pictures(suffix, clips, directory):
         # print(pics)
         original_mov = f"{directory}{cam}{key}{suffix}"
         n = 1
+        pic_lens = []
         for pic in pics:
             pic = pic.strip()
             picture = f"{pic_dir_in}{pic}.png"
             # print(picture)
             output_mov = f"{directory}{cam}{key}_{n}{suffix}"
             filelen = (get_packets(original_mov)/len(pics))/frameRate
+            print(filelen*24)
             print(f"Attaching picture to {cam}{key}{suffix} (pic {pic}.png)")
             command = f"ffmpeg -loop 1 -y -i {picture} -vcodec qtrle -t {filelen} {output_mov} -hide_banner -loglevel error "
             subprocess.call(command, shell=True)
             n = n+1
+            print(get_packets(output_mov))
+            pic_lens.append(get_packets(output_mov))
+        print(pic_lens)
+        total_len = float(sum(pic_lens))
+        original_len = get_packets(original_mov)
+        print(original_len)
+        framediscrepancy = total_len - original_len
+        print(framediscrepancy)
         deleteFile(original_mov)
 
 def attach_videos(suffix, clips, directory):
