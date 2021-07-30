@@ -26,21 +26,6 @@ def transitions(suffix, clips_background, directory):
         arr = np.array(clips)
         consecutive_clips = group_consecutives(arr[:, 0])
 
-        # in_1_len = get_packets(in_1)/frameRate
-        # out_1_len = get_packets(out_1)/frameRate
-        #
-        # first_clip_loc = f"{directory}{cam}{str(clips[0][0] - 1).zfill(4)}{suffix}"
-        # first_clip_locTEMP = f"{directory}{cam}{str(clips[0][0] - 1).zfill(4)}TEMP{suffix}"
-        # first_clip_len = get_packets(first_clip_loc)/frameRate
-        # cut_len = (in_1_len + out_1_len) / 2
-        # overalllen = first_clip_len - cut_len
-        # command = f"ffmpeg -ignore_chapters 1 -y -i {first_clip_loc} -vcodec qtrle -ss {cut_len} -t {overalllen} {first_clip_locTEMP} -hide_banner -loglevel error"
-        # subprocess.call(command, shell=True)
-        #
-        # deleteFile(first_clip_loc)
-        # renamefile(first_clip_locTEMP, first_clip_loc)
-
-
         for group in consecutive_clips:
             if str(group[0]).zfill(4) == str(group[-1]).zfill(4):
                 workingfiles = f"{cam}{str(group[0]).zfill(4)}{suffix}"
@@ -56,8 +41,6 @@ def transitions(suffix, clips_background, directory):
             if clips_images[str(group[0]-1).zfill(4)] in clips_cover.values():
                 pass
             else:
-
-
                 trans_in_len = get_packets(trans_in)/frameRate
                 transition_in_2_loc = f"{directory}{transition_in_2}"
                 TEMP_transition_in_2_loc = f"{directory}TEMP{transition_in_2}"
@@ -76,7 +59,6 @@ def transitions(suffix, clips_background, directory):
             if clips_images[str(group[-1] + 1).zfill(4)] in clips_cover.values():
                 pass
             else:
-
                 trans_out_len = get_packets(trans_out)/frameRate
 
                 transition_out_2_loc = f"{directory}{transition_out_2}"
@@ -92,7 +74,13 @@ def transitions(suffix, clips_background, directory):
 
                 copyfile(trans_out, f"{directory}{transition_out_11}")
 
-                # st()
+        first_clip_loc = f"{directory}{cam}{str(clips_all[0][0]).zfill(4)}{suffix}"
+        firstclip_len = get_packets(first_clip_loc)/frameRate
+        trans_in_len = get_packets(trans_in) / frameRate
+        command = f"ffmpeg -ignore_chapters 1 -y -i {first_clip_loc} -vcodec qtrle -ss 0 -t {firstclip_len-(trans_in_len/2)} {tempclip(first_clip_loc)} -hide_banner -loglevel error"
+        subprocess.call(command, shell=True)
+        deleteFile(first_clip_loc)
+        renamefile(tempclip(first_clip_loc), first_clip_loc)
 
 if __name__ == '__main__':
     transitions(filesuffix, clips_background, layer1)

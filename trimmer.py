@@ -45,11 +45,11 @@ def trimmer(output_suffix, directory):
         createPath(TEMP_FOLDER)
 
         command = "ffmpeg -i " + INPUT_FILE + " -qscale:v " + str(
-            FRAME_QUALITY) + " " + TEMP_FOLDER + "/frame%06d.jpg -hide_banner" + " -loglevel error"
+            FRAME_QUALITY) + " " + TEMP_FOLDER + "/frame%06d.jpg -hide_banner -loglevel error"
         subprocess.call(command, shell=True)
         # get audio
         command = "ffmpeg -i " + INPUT_FILE + " -ab 160k -ac 2 -ar " + str(
-            SAMPLE_RATE) + " -vn " + TEMP_FOLDER + "/audio.wav" + " -loglevel error"
+            SAMPLE_RATE) + " -vn " + TEMP_FOLDER + "/audio.wav -loglevel error"
         subprocess.call(command, shell=True)
 
         #read extracted audio file
@@ -109,7 +109,6 @@ def trimmer(output_suffix, directory):
 
         #find midpoint and the frame where silence was found, if there are multiple instances
         midpointframe = arr[-1, 1]*(mistake_threshold)
-        st()
         if zero_idxs.shape >= (1,):
             framepointofsilence = arr[zero_idxs[-1], 1]
 

@@ -1,13 +1,10 @@
 from parameters import *
-from cover_splitter import *
-from concat_and_replace import *
 from picture_attacher import *
 from remove_audio import *
 from trimmer import *
 from cover_attacher import *
 from transition_attacher import *
-from alternate_zoom import *
-from slow_zoom_and_fade import slow_zoom, fade_out
+from slow_zoom_and_fade import *
 from background_layer import *
 from pop_ups import *
 import time

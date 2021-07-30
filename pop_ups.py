@@ -1,6 +1,5 @@
 from parameters import *
-from background_layer import add_transparency
-from concat_and_replace import concat_and_replace
+from background_layer import add_transparency, concat_and_replace
 
 def bottom_pop_ups(clips, directory):
     if bool(clips.items()) == True:
@@ -30,11 +29,10 @@ def bottom_pop_ups(clips, directory):
             deleteFile(forward_video_loc)
             renamefile(tempclip(forward_video_loc), forward_video_loc)
         elif pop_up_len<video_len:
-            command = f"ffmpeg -ignore_chapters 1 -y -i {video_loc} -vcodec qtrle -ss 0 -t {video_len-pop_up_len-cutamt} {tempclip(video_loc)} -hide_banner -loglevel error"
+            command = f"ffmpeg -ignore_chapters 1 -y -i {video_loc} -vcodec qtrle -ss 0 -t {video_len-pop_up_len-cutamt} {directory}{cam}{k}.5{filesuffix} -hide_banner -loglevel error"
             subprocess.call(command, shell=True)
             deleteFile(video_loc)
-            renamefile(tempclip(video_loc), video_loc)
-            copyfile(pop_up_loc, f"{directory}{cam}{k}.5{filesuffix}")
+            copyfile(pop_up_loc, video_loc)
         elif video_len == pop_up_len:
             deleteFile(video_loc)
             copyfile(pop_up_loc, video_loc)
