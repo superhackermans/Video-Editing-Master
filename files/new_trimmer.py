@@ -1,20 +1,24 @@
 from parameters import *
 import time
 
+
 def getMaxVolume(s):
     maxv = float(np.max(s))
     minv = float(np.min(s))
-    return max(maxv,-minv)
-def copyFrame(inputFrame,outputFrame):
+    return max(maxv, -minv)
+
+
+def copyFrame(inputFrame, outputFrame):
     TEMP_FOLDER = "TEMP"
-    src = TEMP_FOLDER+"/frame{:06d}".format(inputFrame+1)+".jpg"
-    dst = TEMP_FOLDER+"/newFrame{:06d}".format(outputFrame+1)+".jpg"
+    src = TEMP_FOLDER + "/frame{:06d}".format(inputFrame + 1) + ".jpg"
+    dst = TEMP_FOLDER + "/newFrame{:06d}".format(outputFrame + 1) + ".jpg"
     if not os.path.isfile(src):
         return False
     copyfile(src, dst)
     # if outputFrame%20 == 19:
     #     print(str(outputFrame+1)+" time-altered frames saved.")
     return True
+
 
 def trimmer(output_suffix, directory):
     start_time = time.time()
@@ -35,11 +39,11 @@ def trimmer(output_suffix, directory):
     createPath(vid_processed)
     createPath(wav_dir)
 
-    #Trim and delete mistakes
+    # Trim and delete mistakes
     for video_name in myVideos:
         print(f'Beginning Trimming for {video_name}')
         INPUT_FILE = f"{directory}{video_name}"
-        assert INPUT_FILE != None , "No Input File Detected"
+        assert INPUT_FILE != None, "No Input File Detected"
         OUTPUT_FILE = f"{layer2}{nosuffix(video_name)}{output_suffix}"
 
         createPath(TEMP_FOLDER)
@@ -52,106 +56,81 @@ def trimmer(output_suffix, directory):
             SAMPLE_RATE) + " -vn " + TEMP_FOLDER + "/audio.wav -loglevel error"
         subprocess.call(command, shell=True)
 
-        #read extracted audio file
-        sampleRate, audioData = wavfile.read(TEMP_FOLDER+"/audio.wav")
+        # read extracted audio file
+        sampleRate, audioData = wavfile.read(TEMP_FOLDER + "/audio.wav")
         audioSampleCount = audioData.shape[0]
         maxAudioVolume = getMaxVolume(audioData)
 
-        #define parameters
-        samplesPerFrame = sampleRate/frameRate
-        audioFrameCount = int(math.ceil(audioSampleCount/samplesPerFrame))
+        # define parameters
+        samplesPerFrame = sampleRate / frameRate
+        audioFrameCount = int(math.ceil(audioSampleCount / samplesPerFrame))
         hasLoudAudio = np.zeros((audioFrameCount))
         volumeInformation = np.zeros((audioFrameCount))
 
-
-        #split audio into frames and turn the volume info into an array
+        # split audio into frames and turn the volume info into an array
         for i in range(audioFrameCount):
             start = int(i * samplesPerFrame)
             end = min(int((i + 1) * samplesPerFrame), audioSampleCount)
             audiochunks = audioData[start:end]
-            maxchunksVolume = float(getMaxVolume(audiochunks))/maxAudioVolume
+            maxchunksVolume = float(getMaxVolume(audiochunks)) / maxAudioVolume
             volumeInformation = np.append(volumeInformation, maxchunksVolume)
             # print(maxchunksVolume)
             if maxchunksVolume >= SILENT_THRESHOLD:
                 hasLoudAudio[i] = 1
         print(f"hasLoudAudio is {hasLoudAudio}")
-        #remove small smack instances
+        # remove small smack instances
         loud_instance = np.where(hasLoudAudio == 1)[0]
         if hasLoudAudio[loud_instance[0] + 1] == 0:
             hasLoudAudio[loud_instance[0]] = 0
         if hasLoudAudio[loud_instance[0] + 2] == 0:
             hasLoudAudio[loud_instance[0]] = 0
 
-        #add frame spill to the end
+        # add frame spill to the end
         hasLoudAudio[loud_instance[-1]:(loud_instance[-1])] = 1
 
-        #combine into list of chunks
-        chunks = [[0,0,0]]
+        # combine into list of chunks
+        chunks = [[0, 0, 0]]
         shouldIncludeFrame = np.zeros(audioFrameCount)
 
-        #concatenate and add buffers
+        # concatenate and add buffers
         for i in range(audioFrameCount):
-            start = int(max(0,i-FRAME_SPILL_FRONT))
-            end = int(min(audioFrameCount,i+1+FRAME_SPILL_BACK))
+            start = int(max(0, i ))
+            end = int(min(audioFrameCount, i + 1))
             shouldIncludeFrame[i] = np.max(hasLoudAudio[start:end])
-            if (i >= 1 and shouldIncludeFrame[i] != shouldIncludeFrame[i-1]): # Did we flip?
-                chunks.append([chunks[-1][1],i,shouldIncludeFrame[i-1]])
+            if (i >= 1 and shouldIncludeFrame[i] != shouldIncludeFrame[i - 1]):  # Did we flip?
+                chunks.append([chunks[-1][1], i, shouldIncludeFrame[i - 1]])
 
-        #Eliminate small middle chunks
-        for chunk in chunks[1:-1]:
-            if chunk[1] - chunk[0] < MAX_SILENCE_PERMITTED:
-                chunk[2] = 1.0
-        # print(f'middle chunks are {chunks}')
-        #If long pause, delete all footage prior
-        arr = np.asarray(chunks)
 
-        zero_idxs = np.where(arr[1:-1, 2] == 0)[0] + 1      # + 1 to compensate for indexing from 1:
 
-        #find midpoint and the frame where silence was found, if there are multiple instances
-        midpointframe = arr[-1, 1]*(mistake_threshold)
-        if zero_idxs.shape >= (1,):
-            framepointofsilence = arr[zero_idxs[-1], 1]
 
-        #ignore if silence gap was due to noise at the end of the clip. else, delete everything in front
-        if zero_idxs.shape == (0,):
-            break_point = 0
-        elif zero_idxs.shape != (0,) and framepointofsilence > midpointframe:
-            arr[zero_idxs[-1]:, 2] = 0
-        else:
-            break_point = zero_idxs[-1]
-            arr[:break_point, 2] = 0
 
-        #add a frame spill to the end
-        one_idxs = np.where(arr[:, 2] == 1)[0]
-        arr[one_idxs[-1], 1] = arr[one_idxs[-1], 1] + FRAME_SPILL_BACK_FINAL
+        arr = np.asarray(hasLoudAudio)
+        chunks = [[0, 0, 0]]
+        zero_idxs = np.where(arr[1:-1] == 0)[0]
+        loud_instance = np.where(arr == 1)[0]
+        shouldIncludeFrame = np.zeros(len(hasLoudAudio))
 
-        chunks = arr.tolist()
-        """
-        shouldincludeFrames ie. 1 reaches above threshold and 0 does not per frame
-        [0. 0. 0. 0. 0. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.
-         1. 0. 0. 0. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.
-         1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 0. 0. 0. 0. 1. 1. 1. 1. 1. 1. 1. 1.
-         1. 1. 1. 1. 0. 0. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 0. 0. 0.
-         0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
-         0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
-    
-        appended chunks is [[0, 25, 1.0], [25, 28, 0.0], [28, 93, 1.0], [93, 96, 0.0], [96, 118, 1.0], [118, 126, 0.0],
-        [126, 157, 1.0], [157, 175, 0.0], [175, 304, 1.0], [304, 309, 0.0], [309, 371, 1.0], [371, 374, 0.0],[374, 418, 1.0],
-        [418, 421, 0.0], [421, 478, 1.0], [478, 517, 0.0]]
-        """
-        #append last chunk
-        # print(f'chunks[-1][1] is {chunks[-1][1]}')
-        chunks.append([chunks[-1][1],audioFrameCount,shouldIncludeFrame[i-1]])
-        if chunks[-1][2] == 1 and chunks[-2][2] == 0:
-            chunks[-1][2] = 0
-        chunks = chunks[1:]
-        # st()
-        print(f'Chunked audio: {chunks}')
-        # print(f'Mistakes detected and removing: {mistakes}')
-        # st()
+        for i in range(len(hasLoudAudio)):
+            start = int(max(0, i))
+            end = int(min(len(hasLoudAudio), i + 1))
+            shouldIncludeFrame[i] = np.max(hasLoudAudio[start:end])
+            if (i >= 1 and shouldIncludeFrame[i] != shouldIncludeFrame[i - 1]):  # Did we flip?
+                chunks.append([chunks[-1][1], i, shouldIncludeFrame[i - 1]])
 
-        #create new Audio data array
-        outputAudioData = np.zeros((0,audioData.shape[1]))
+        chunks = np.asarray(chunks[1:-1])
+
+        midpointframe = chunks[-1, 1] * (.75)
+        long_zero_idx = np.where((chunks[:, 1] - chunks[:, 0] > MAX_SILENCE_PERMITTED)[0] & (chunks[:, 2] == 0))
+        last_mistake = (long_zero_idx[np.where(chunks[long_zero_idx[0:-1], 1] < midpointframe)[0][-1]], 1)[0]
+
+
+
+
+
+
+
+        # create new Audio data array
+        outputAudioData = np.zeros((0, audioData.shape[1]))
         outputPointer = 0
 
         lastExistingFrame = None
@@ -192,12 +171,13 @@ def trimmer(output_suffix, directory):
 
         wavfile.write(TEMP_FOLDER + "/audioNew.wav", SAMPLE_RATE, outputAudioData)
 
-        command = "ffmpeg -framerate "+str(frameRate)+" -i "+TEMP_FOLDER+"/newFrame%06d.jpg -i "+TEMP_FOLDER+"/audioNew.wav -strict -2 "+OUTPUT_FILE + " -loglevel error"
+        command = "ffmpeg -framerate " + str(
+            frameRate) + " -i " + TEMP_FOLDER + "/newFrame%06d.jpg -i " + TEMP_FOLDER + "/audioNew.wav -strict -2 " + OUTPUT_FILE + " -loglevel error"
         subprocess.call(command, shell=True)
 
         shutil.rmtree(TEMP_FOLDER)
 
-        #move file to processed_raw_files folder
+        # move file to processed_raw_files folder
         source_dir = directory
         target_dir = vid_processed
 
@@ -206,7 +186,6 @@ def trimmer(output_suffix, directory):
         print(f'Finished Trimming for {video_name}')
 
     for video_name in myVideos:
-
         target_dir = directory
         source_dir = vid_processed
 
@@ -214,7 +193,8 @@ def trimmer(output_suffix, directory):
 
     deletePath(vid_processed)
     print(f"Finished trimming in {round((time.time() - start_time) / 60, 2)} minutes. "
-          f"Avg {round(round((time.time() - start_time) / 60, 2)/(len(myVideos)), 2)} minutes per clip.")
+          f"Avg {round(round((time.time() - start_time) / 60, 2) / (len(myVideos)), 2)} minutes per clip.")
+
 
 if __name__ == "__main__":
     trimmer(filesuffix, vid_dir_in)

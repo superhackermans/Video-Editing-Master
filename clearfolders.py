@@ -25,7 +25,7 @@ if __name__ == '__main__':
                           cover_dir_out, pic_dir_out, ]
     delete_directories = [wav_dir, pic_dir_out, layer1,
                           wav_converting, "./TEMP", layer3,
-                          cover_dir_out, layer2, layer4, backuplayer]
+                          cover_dir_out, layer2, layer4, backuplayer, layer0, layer_popups]
 
     if x == "yes" or x == "y":
         for file in input_directories:

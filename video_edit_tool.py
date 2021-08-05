@@ -31,9 +31,10 @@ def main():
       fade_out(filesuffix, clips_ben, layer2)
 
   if x == "e":
+      dup_dir(layer2, backuplayer)
       reset()
 
-      # splitcovers(cov_dir_in)
+      splitcovers(cov_dir_in)
 
       if bool(clips_pop_up) == True:
           bottom_pop_ups(clips_pop_up, layer_popups)

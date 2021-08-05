@@ -144,8 +144,8 @@ def outro_attacher(suffix, clips, directory):
     print("Attaching outro to end of cover layer")
     clips = list(clips.items())
     last_clip_loc = f"{directory}{cam}{clips[-1][0]}{suffix}"
-    last_clip_len = get_length(last_clip_loc)
-    cutamt = .5
+    last_clip_len = (get_packets(last_clip_loc))/frameRate
+    cutamt = 1
     command = f"ffmpeg -ignore_chapters 1 -y -i {last_clip_loc} -vcodec qtrle -ss 0 -t {last_clip_len-cutamt} {tempclip(last_clip_loc)} -hide_banner -loglevel error"
     subprocess.call(command, shell=True)
     deleteFile(last_clip_loc)
