@@ -6,8 +6,10 @@ from cover_attacher import *
 from transition_attacher import *
 from slow_zoom_and_fade import *
 from background_layer import *
+from new_trimmer import *
 from pop_ups import *
 import time
+
 
 def main():
   start_time = time.time()
@@ -20,15 +22,15 @@ def main():
   make_folders()
 
   if x == "t":
-      trimmer(filesuffix, vid_dir_in) # desired output, and directory
+      new_trimmer(filesuffix, vid_dir_in) # desired output, and directory
 
       dup_dir(layer2, backuplayer)
       # deletePath(layer2)
       # dup_dir(backuplayer, layer2)
 
-      altzoom(filesuffix, clips_ben, layer2)
-      slow_zoom(filesuffix, clips_ben, layer2)
-      fade_out(filesuffix, clips_ben, layer2)
+      # altzoom(filesuffix, clips_ben, layer2)
+      # slow_zoom(filesuffix, clips_ben, layer2)
+      # fade_out(filesuffix, clips_ben, layer2)
 
   if x == "e":
       dup_dir(layer2, backuplayer)
@@ -68,7 +70,6 @@ def main():
       deletePath(wav_converting)
 
   else:
-      print("Input unrecognized")
       pass
   print(f"Program took {round((time.time() - start_time) / 60, 2)} minutes to finish.")
 
