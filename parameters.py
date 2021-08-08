@@ -15,6 +15,8 @@ from scipy.io import wavfile
 import math
 from shutil import copyfile, rmtree
 from pdb import set_trace as st
+from pathlib import Path
+
 
 # camera prefix
 cam = "C"
@@ -61,17 +63,19 @@ toc_loc = "{pop_up_dir}toc.mov"
 # parameters
 frameRate = 24
 SAMPLE_RATE = 44100
-SILENT_THRESHOLD = 0.07  # 0-1. 1 is max volume
-FRAME_SPILL_FRONT = 0  # frames on front side of speech to be included
-FRAME_SPILL_BACK = 2  # frames on back side of speech to be included
-FRAME_SPILL_BACK_FINAL = 5  # frames to include at the very end of the clip
+SILENT_THRESHOLD = 0.06  # 0-1. 1 is max volume
+FRAME_SPILL_FRONT_FINAL = 1
+TINY_MISTAKE_THRESHOLD = 2
+FRAME_SPILL_FRONT = 1
+FRAME_SPILL_BACK_FINAL = 6  # frames to include at the very end of the clip
 silent_speed = 99999999999999
 sounded_speed = 1
 NEW_SPEED = [silent_speed, sounded_speed]
 FRAME_QUALITY = 3  # 1 is highest, 31 is lowest
-AUDIO_FADE_ENVELOPE_SIZE = 400  # smooth out transition's audio by quickly fading in/out (arbitrary magic number whatever)
-MAX_SILENCE_PERMITTED = 36  # length of frames permitted to not count as silence
+AUDIO_FADE_ENVELOPE_SIZE = 0  # smooth out transition's audio by quickly fading in/out (arbitrary magic number whatever)
+MAX_SILENCE_PERMITTED = 30  # length of frames permitted to not count as silence
 mistake_threshold = .75 # if there a mistake past this point, it will not remove
+
 
 original_dimensions = 3840, 2160
 scale_factor = .85
@@ -298,6 +302,12 @@ def make_folders():
         except FileExistsError:
             pass
     deletePath(TEMP_FOLDER)
+    if os.path.exists(data_file):
+        pass
+    else:
+        file = open("data.txt", "w")
+        file.write("")
+        file.close()
 
 
 clips_images = readfile(data_file)
@@ -329,5 +339,4 @@ clips_all_except_cover_and_last = {k: v for k, v in clips_images.items() if v in
 
 
 if __name__ == "__main__":
-    st()
     make_folders()
