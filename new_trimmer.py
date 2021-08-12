@@ -185,7 +185,7 @@ def new_trimmer(output_suffix, directory):
         else:
             print(f"2 or 3 dimensional array not detected. Shape is {chunks.shape}, please review.")
 
-        # create new Audio data array, set output pointer
+        # create new Audio data array
         outputAudioData = np.zeros((0, audioData.shape[1]))
         outputPointer = 0
 
