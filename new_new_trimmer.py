@@ -125,9 +125,8 @@ def new_trimmer(output_suffix, directory):
             chunks[[tiny_silence_idxs], 2] = 1
 
         chunks = repack(chunks)
-
         # if there is a long mistake, turn all noise prior mistake into 0
-        midpointframe = chunks[-1, 1] * (.75)
+        midpointframe = chunks[-1, 1] * (.66)
         long_zero_idxs = np.where((chunks[:, 1] - chunks[:, 0] > MAX_SILENCE_PERMITTED) & (chunks[:, 2] == 0) & (
                     chunks[:, 0] < midpointframe))
 
@@ -154,7 +153,7 @@ def new_trimmer(output_suffix, directory):
         end_cut = round((chunks[-1][1] - chunks[-1][0]) / 24, 2)
 
         if long_zero_idxs[0].shape >= (1,) and end_cut != 0:
-            print(f"print(f'{video_name}: Trimming {intro_cut} seconds/{round(intro_cut / clip_len * 100, 2)}% from front and {end_cut} seconds/{round(end_cut / clip_len * 100, 2)}% from back.")
+            print(f'{video_name}: Trimming {intro_cut} seconds/{round(intro_cut / clip_len * 100, 2)}% from front and {end_cut} seconds/{round(end_cut / clip_len * 100, 2)}% from back.')
         if long_zero_idxs[0].shape >= (1,) and end_cut == 0:
             print(f"{video_name}: Trimming {intro_cut} seconds/{round(intro_cut / clip_len * 100, 2)}% from front.")
         if long_zero_idxs[0].shape < (1,) and end_cut != 0:
@@ -185,6 +184,7 @@ def new_trimmer(output_suffix, directory):
         else:
             print(f"2 or 3 dimensional array not detected. Shape is {chunks.shape}, please review.")
 
+        print(chunks)
         # create new Audio data array
         outputAudioData = np.zeros((0, audioData.shape[1]))
         outputPointer = 0

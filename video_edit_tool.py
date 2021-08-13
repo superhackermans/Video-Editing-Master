@@ -6,7 +6,7 @@ from cover_attacher import *
 from transition_attacher import *
 from slow_zoom_and_fade import *
 from background_layer import *
-from new_trimmer import *
+from new_new_trimmer import *
 from pop_ups import *
 import time
 
@@ -28,9 +28,9 @@ def main():
       # deletePath(layer2)
       # dup_dir(backuplayer, layer2)
 
-      # altzoom(filesuffix, clips_ben, layer2)
-      # slow_zoom(filesuffix, clips_ben, layer2)
-      # fade_out(filesuffix, clips_ben, layer2)
+      altzoom(filesuffix, clips_ben, layer2)
+      slow_zoom(filesuffix, clips_ben, layer2)
+      fade_out(filesuffix, clips_ben, layer2)
 
   if x == "e":
       dup_dir(layer2, backuplayer)
