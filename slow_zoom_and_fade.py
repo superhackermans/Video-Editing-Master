@@ -4,8 +4,6 @@ def altzoom(suffix, clips, directory):
     #zoom in alternating
 
     clips = list(clips.keys())
-    for clip in clips:
-        print(f"Preparing to zoom in {cam}{clip}{filesuffix}")
     alterClips = altElement(clips)
     alterClips = sorted(alterClips[1:-1])
 
@@ -22,6 +20,7 @@ def altzoom(suffix, clips, directory):
     for clip in alterClips:
         filename = f"{cam}{clip}{suffix}"
         move_file(directory, filename, TEMP_FOLDER)
+        print(f"Preparing to zoom in {filename}")
 
     for clip in alterClips:
         filename = f"{cam}{clip}{suffix}"

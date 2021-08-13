@@ -75,7 +75,7 @@ FRAME_QUALITY = 3  # 1 is highest, 31 is lowest
 AUDIO_FADE_ENVELOPE_SIZE = 0  # smooth out transition's audio by quickly fading in/out (arbitrary magic number whatever)
 MAX_SILENCE_PERMITTED = 30  # length of frames permitted to not count as silence
 mistake_threshold = .75 # if there a mistake past this point, it will not remove
-
+cutoff_point = .66
 
 original_dimensions = 3840, 2160
 scale_factor = .85

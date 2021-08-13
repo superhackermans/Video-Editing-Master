@@ -1,5 +1,4 @@
 from parameters import *
-import termgraph
 import time
 
 
@@ -52,7 +51,7 @@ def copyFrame(inputFrame, outputFrame):
     return True
 
 
-def new_trimmer(output_suffix, directory):
+def trimmer(output_suffix, directory, output_dir):
     start_time = time.time()
     # turn filenames in list
     myVideos = []
@@ -75,7 +74,7 @@ def new_trimmer(output_suffix, directory):
     for video_name in myVideos:
         INPUT_FILE = f"{directory}{video_name}"
         assert INPUT_FILE != None, "No Input File Detected"
-        OUTPUT_FILE = f"{layer2}{nosuffix(video_name)}{output_suffix}"
+        OUTPUT_FILE = f"{output_dir}{nosuffix(video_name)}{output_suffix}"
 
         createPath(TEMP_FOLDER)
 
@@ -126,7 +125,7 @@ def new_trimmer(output_suffix, directory):
 
         chunks = repack(chunks)
         # if there is a long mistake, turn all noise prior mistake into 0
-        midpointframe = chunks[-1, 1] * (.66)
+        midpointframe = chunks[-1, 1] * (cutoff_point)
         long_zero_idxs = np.where((chunks[:, 1] - chunks[:, 0] > MAX_SILENCE_PERMITTED) & (chunks[:, 2] == 0) & (
                     chunks[:, 0] < midpointframe))
 
@@ -135,6 +134,9 @@ def new_trimmer(output_suffix, directory):
 
         chunks = repack(chunks)
 
+        is_all_zero = np.all((audioarray == 0))
+        if is_all_zero:
+            continue
         # st()
 
         # if there is noise at the end after silence, erase end
@@ -263,4 +265,4 @@ def new_trimmer(output_suffix, directory):
 
 if __name__ == "__main__":
 
-    new_trimmer(filesuffix, vid_dir_in)
+    trimmer(filesuffix, vid_dir_in)

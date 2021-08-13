@@ -66,7 +66,6 @@ def attach_covers(suffix, clips, directory):
         final_output = f"{directory}{cam}{key}{suffix}"
 
         print(f"Attaching cover {value} to {filename}")
-
         original_len = get_length(originalfile)
         coverlen = get_length(coverloc)
 

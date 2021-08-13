@@ -37,7 +37,7 @@ def attach_multiple_pictures(suffix, clips, directory):
             # print(picture)
             output_mov = f"{directory}{cam}{key}_{n}{suffix}"
             filelen = (get_packets(original_mov)/len(pics))/frameRate
-            print(filelen*24)
+            # print(filelen*24)
             print(f"Attaching picture to {cam}{key}{suffix} (pic {pic}.png)")
             command = f"ffmpeg -loop 1 -y -i {picture} -vcodec qtrle -t {filelen} {output_mov} -hide_banner -loglevel error "
             subprocess.call(command, shell=True)

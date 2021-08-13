@@ -74,7 +74,8 @@ def transitions(suffix, clips_background, directory):
 
                 copyfile(trans_out, f"{directory}{transition_out_11}")
 
-        first_clip_loc = f"{directory}{cam}{str(clips_all[0][0]).zfill(4)}{suffix}"
+        list_clips = list(clips_all.items())
+        first_clip_loc = f"{directory}{cam}{str(list_clips[0][0]).zfill(4)}{suffix}"
         firstclip_len = get_packets(first_clip_loc)/frameRate
         trans_in_len = get_packets(trans_in) / frameRate
         command = f"ffmpeg -ignore_chapters 1 -y -i {first_clip_loc} -vcodec qtrle -ss 0 -t {firstclip_len-(trans_in_len/2)} {tempclip(first_clip_loc)} -hide_banner -loglevel error"
