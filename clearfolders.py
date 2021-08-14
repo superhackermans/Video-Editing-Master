@@ -22,7 +22,7 @@ if __name__ == '__main__':
     input_directories = [vid_dir_in, pic_dir_in,
                          cov_dir_in, data_file, pop_up_dir]
     output_directories = [layer2, wav_converting,
-                          cover_dir_out, pic_dir_out, ]
+                          cover_dir_out, pic_dir_out, vid_processed, cover_cut]
     delete_directories = [wav_dir, pic_dir_out, layer1,
                           wav_converting, "./TEMP", layer3,
                           cover_dir_out, layer2, layer4, backuplayer, layer0, layer_popups]

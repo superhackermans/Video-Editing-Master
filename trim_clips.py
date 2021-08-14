@@ -191,22 +191,6 @@ def trimmer(output_suffix, directory, output_dir):
         outputAudioData = np.zeros((0, audioData.shape[1]))
         outputPointer = 0
 
-        # python3 - m
-        # plotext
-
-        # totallen = audioFrameCount
-        # if chunks.shape == (3, 3):
-        #
-        #     cutfront = chunks[0][1]
-        #     middle = chunks[-2][1] - chunks[0][1]
-        #     cutback = chunks[-1][1] - chunks [-1][0]
-        #     y = [0]
-        #
-        #     plt.barh(y, cutfront, color='#b5ffb9', edgecolor='white')
-        #     plt.barh(y, middle, left=cutfront, color='#f9bc86', edgecolor='white')
-        #     plt.barh(y, cutback, left=[100 - i for i in cutback], color='#a3acff', edgecolor='white')
-        #
-        #     plt.show()
 
 
 
