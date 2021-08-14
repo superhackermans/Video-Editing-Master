@@ -52,6 +52,7 @@ def copyFrame(inputFrame, outputFrame):
 
 
 def trimmer(output_suffix, directory, output_dir):
+    deletePath(TEMP_FOLDER)
     start_time = time.time()
     # turn filenames in list
     myVideos = []
@@ -67,7 +68,6 @@ def trimmer(output_suffix, directory, output_dir):
         print(video)
     # print(myVideos)
 
-    createPath(vid_processed)
     createPath(wav_dir)
 
     # Trim and delete mistakes
@@ -90,6 +90,9 @@ def trimmer(output_suffix, directory, output_dir):
         sampleRate, audioData = wavfile.read(TEMP_FOLDER + "/audio.wav")
         audioSampleCount = audioData.shape[0]
         maxAudioVolume = getMaxVolume(audioData)
+        if maxAudioVolume <= min_volume_threshold:
+            print(f"{video_name} has no significant sound.")
+            continue
 
         # define parameters
         samplesPerFrame = sampleRate / frameRate
@@ -109,34 +112,34 @@ def trimmer(output_suffix, directory, output_dir):
 
         audioarray = np.asarray(hasLoudAudio)
         chunks = pack(audioarray)
-
-        # if no audio, continue to next iteration
-        is_all_zero = np.all((audioarray == 0))
-        if is_all_zero:
+        if chunks.shape == (1,3):
+            print(f"Please check audio for {video_name}. Shape is {chunks.shape}")
             continue
+        # # if no audio, continue to next iteration
+        # is_all_zero = np.all((audioarray == 0))
+        # if is_all_zero:
+        #     continue
 
         # if there are small isolated elements of noise, remove them
         tiny_noise_idxs = np.where((chunks[:, 1] - chunks[:, 0] <= TINY_MISTAKE_THRESHOLD) & (chunks[:, 2] == 1))
         if tiny_noise_idxs[0].shape >= (1, 0):
             chunks[[tiny_noise_idxs], 2] = 0
+        chunks = repack(chunks)
         tiny_silence_idxs = np.where((chunks[:, 1] - chunks[:, 0] <= TINY_MISTAKE_THRESHOLD) & (chunks[:, 2] == 0))
         if tiny_silence_idxs[0].shape >= (1, 0):
             chunks[[tiny_silence_idxs], 2] = 1
-
         chunks = repack(chunks)
         # if there is a long mistake, turn all noise prior mistake into 0
         midpointframe = chunks[-1, 1] * (cutoff_point)
         long_zero_idxs = np.where((chunks[:, 1] - chunks[:, 0] > MAX_SILENCE_PERMITTED) & (chunks[:, 2] == 0) & (
                     chunks[:, 0] < midpointframe))
-
         if long_zero_idxs[0].shape >= (1,):
             chunks[:long_zero_idxs[0][-1], 2] = 0
-
         chunks = repack(chunks)
 
-        is_all_zero = np.all((audioarray == 0))
-        if is_all_zero:
-            continue
+        # is_all_zero = np.all((audioarray == 0))
+        # if is_all_zero:
+        #     continue
         # st()
 
         # if there is noise at the end after silence, erase end
@@ -186,7 +189,7 @@ def trimmer(output_suffix, directory, output_dir):
         else:
             print(f"2 or 3 dimensional array not detected. Shape is {chunks.shape}, please review.")
 
-        print(chunks)
+        # print(chunks)
         # create new Audio data array
         outputAudioData = np.zeros((0, audioData.shape[1]))
         outputPointer = 0
@@ -240,13 +243,11 @@ def trimmer(output_suffix, directory, output_dir):
             frameRate) + " -y -i " + TEMP_FOLDER + "/newFrame%06d.jpg -i " + TEMP_FOLDER + "/audioNew.wav -strict -2 " + OUTPUT_FILE + " -loglevel error"
         subprocess.call(command, shell=True)
 
-        shutil.rmtree(TEMP_FOLDER)
+        deletePath(TEMP_FOLDER)
 
 
-    deletePath(vid_processed)
     print(f"Finished trimming in {round((time.time() - start_time) / 60, 2)} minutes. "
           f"Avg {round(round((time.time() - start_time) / 60, 2) / (len(myVideos)), 2)} minutes per clip.")
 
 if __name__ == "__main__":
-
-    trimmer(filesuffix, vid_dir_in)
+    trimmer(filesuffix, vid_dir_in, layer2)  # desired output, and directory

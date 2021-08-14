@@ -76,7 +76,8 @@ AUDIO_FADE_ENVELOPE_SIZE = 0  # smooth out transition's audio by quickly fading 
 MAX_SILENCE_PERMITTED = 30  # length of frames permitted to not count as silence
 mistake_threshold = .75 # if there a mistake past this point, it will not remove
 cutoff_point = .66
-
+min_volume_threshold = 1000
+magicnumber = 1/36
 original_dimensions = 3840, 2160
 scale_factor = .85
 raise_up = 0
@@ -95,20 +96,6 @@ def group_consecutives(vals, step=1):
             result.append(run)
         expect = v + step
     return result
-
-def jpg_to_png(directory):
-    myJPEG = []
-    for file in os.listdir(directory):
-        if file.endswith(".jpg") or file.endswith(".jpeg") or file.endswith(".JPG") or file.endswith(".JPEG"):
-            myJPEG.append(file)
-    myJPEG = sorted(myJPEG)
-    for jpg in myJPEG:
-        # print(f"Converting {jpg} to PNG format")
-        INPUT_JPG = f"{directory}{jpg}"
-        OUTPUT_PNG = f"{directory}{inputToOutputPNG(jpg)}"
-        # convert JPG to PNG
-        command = "ffmpeg -y -i " + INPUT_JPG + " -hide_banner " + OUTPUT_PNG + " -loglevel error"
-        subprocess.call(command, shell=True)
 
 def dup_dir(directory, directory2):
     try:

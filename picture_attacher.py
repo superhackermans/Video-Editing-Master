@@ -1,7 +1,24 @@
 from parameters import *
+from background_layer import concat_and_replace
+
+
+
+def jpg_to_png(directory):
+    myJPEG = []
+    for file in os.listdir(directory):
+        if file.endswith(".jpg") or file.endswith(".jpeg") or file.endswith(".JPG") or file.endswith(".JPEG"):
+            myJPEG.append(file)
+    myJPEG = sorted(myJPEG)
+    for jpg in myJPEG:
+        # print(f"Converting {jpg} to PNG format")
+        INPUT_JPG = f"{directory}{jpg}"
+        OUTPUT_PNG = f"{directory}{inputToOutputPNG(jpg)}"
+        # convert JPG to PNG
+        command = "ffmpeg -y -i " + INPUT_JPG + " -hide_banner " + OUTPUT_PNG + " -loglevel error"
+        subprocess.call(command, shell=True)
 
 def attach_pictures(suffix, clips, directory):
-    print("Beginning picture attaching")
+    print("Attaching pictures")
 
     copy_directory(pic_dir_in, pic_dir_out)
 
@@ -18,7 +35,7 @@ def attach_pictures(suffix, clips, directory):
         print(f"Attaching picture to {cam}{key}{suffix}")
         INPUT_IMAGE = f"{pic_dir_in}{cam}{key}.png"
         OUTPUT_MOV = f"{directory}{cam}{key}{suffix}"
-        filelen = float(get_packets(OUTPUT_MOV))/frameRate
+        filelen = float(get_packets(OUTPUT_MOV))/frameRate + magicnumber
         command = f"ffmpeg -loop 1 -y -i {INPUT_IMAGE} -vcodec qtrle -t {filelen} {OUTPUT_MOV} -hide_banner -loglevel error "
         subprocess.call(command, shell=True)
 
@@ -36,7 +53,7 @@ def attach_multiple_pictures(suffix, clips, directory):
             picture = f"{pic_dir_in}{pic}.png"
             # print(picture)
             output_mov = f"{directory}{cam}{key}_{n}{suffix}"
-            filelen = (get_packets(original_mov)/len(pics))/frameRate
+            filelen = (get_packets(original_mov)/len(pics))/frameRate + magicnumber
             # print(filelen*24)
             print(f"Attaching picture to {cam}{key}{suffix} (pic {pic}.png)")
             command = f"ffmpeg -loop 1 -y -i {picture} -vcodec qtrle -t {filelen} {output_mov} -hide_banner -loglevel error "
@@ -44,12 +61,12 @@ def attach_multiple_pictures(suffix, clips, directory):
             n = n+1
             print(get_packets(output_mov))
             pic_lens.append(get_packets(output_mov))
-        print(pic_lens)
-        total_len = float(sum(pic_lens))
-        original_len = get_packets(original_mov)
-        print(original_len)
-        framediscrepancy = total_len - original_len
-        print(framediscrepancy)
+        # print(pic_lens)
+        # total_len = float(sum(pic_lens))
+        # original_len = get_packets(original_mov)
+        # print(original_len)
+        # framediscrepancy = total_len - original_len
+        # print(framediscrepancy)
         deleteFile(original_mov)
 
 def attach_videos(suffix, clips, directory):
@@ -75,7 +92,12 @@ def attach_videos(suffix, clips, directory):
 
 
 if __name__ == "__main__":
-    reset()
-    # attach_pictures(filesuffix, clips_pictures, layer2)
+    deletePath(layer2)
+    dup_dir(layer4, layer2)
+    concat_and_replace(filesuffix, filesuffix, clips_all_except_pics_and_vid, layer2, vid_transparency_smol)
+    # concat_and_replace(filesuffix, filesuffix, clips_background, layer3, backgroundloc)
+    # concat_and_replace(filesuffix, filesuffix, clips_ben_and_cover, layer3, vid_transparency_smol)
+
+    attach_pictures(filesuffix, clips_pictures, layer2)
     attach_multiple_pictures(filesuffix, clips_mult_pics, layer2)
-    # attach_videos(filesuffix, clips_video, layer2)
+    attach_videos(filesuffix, clips_video, layer2)
