@@ -56,7 +56,7 @@ def trimmer(output_suffix, directory, output_dir):
     start_time = time.time()
     # turn filenames in list
     myVideos = []
-    print("Processing: ")
+
     for file in os.listdir(directory):
         if file.endswith(".MP4") or file.endswith(".mp4"):
             myVideos.append(file)
@@ -64,8 +64,9 @@ def trimmer(output_suffix, directory, output_dir):
         print("No input videos detected")
         # quit()
     myVideos = sorted(myVideos)
-    for video in myVideos:
-        print(video)
+    print(f"Processing: {myVideos[0]} to {myVideos[-1]}")
+    # for video in myVideos:
+    #     print(video)
     # print(myVideos)
 
     createPath(wav_dir)

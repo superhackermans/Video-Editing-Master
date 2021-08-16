@@ -78,12 +78,12 @@ def attach_covers(suffix, clips, directory):
         frame_len = get_packets(final_output)
         original_frames = get_packets(originalfile)
 
-        if original_frames-frame_len == 0:
-            print("There was no discrepancy between lengths.")
-        else:
-            print(f"filelength of cover {value} is {frame_len} frames")
-            print(f"filelength of layer 3 clip is {original_frames} frames")
-            print(f"The discrepancy is {frame_len - original_frames} frames")
+        # if original_frames-frame_len == 0:
+        #     print("There was no discrepancy between lengths.")
+        # else:
+            # print(f"filelength of cover {value} is {frame_len} frames")
+            # print(f"filelength of layer 3 clip is {original_frames} frames")
+            # print(f"The discrepancy is {frame_len - original_frames} frames")
 
 def attach_side_covers(suffix, clips, directory):
 

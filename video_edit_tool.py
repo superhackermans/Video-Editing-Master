@@ -33,9 +33,17 @@ def main():
       fade_out(filesuffix, clips_ben, layer2)
 
   if x == "e":
-      dup_dir(layer2, backuplayer)
-      # reset()
-      splitcovers(cov_dir_in)
+      def reset():
+          deletePath(layer1)
+          deletePath(layer2)
+          deletePath(layer3)
+          deletePath(layer4)
+          deletePath(layer0)
+          deletePath(layer_popups)
+          deletePath(layer_toc)
+          dup_dir(backuplayer, layer2)
+      reset()
+      # splitcovers(cov_dir_in)
 
       if bool(clips_pop_up) == True:
           bottom_pop_ups(clips_pop_up, layer_popups)
@@ -44,10 +52,10 @@ def main():
           pass
 
       dup_dir(layer2, layer3)
-      concat_and_replace(filesuffix, filesuffix, clips_all_except_pics_and_vid, layer2, vid_transparency_smol)
       concat_and_replace(filesuffix, filesuffix, clips_background, layer3, backgroundloc)
       concat_and_replace(filesuffix, filesuffix, clips_ben_and_cover, layer3, vid_transparency_smol)
 
+      concat_and_replace(filesuffix, filesuffix, clips_all_except_pics_and_vid, layer2, vid_transparency_smol)
       attach_pictures(filesuffix, clips_pictures, layer2)
       attach_multiple_pictures(filesuffix, clips_mult_pics, layer2)
       attach_videos(filesuffix, clips_video, layer2)
@@ -62,7 +70,7 @@ def main():
 
       attach_covers(filesuffix, clips_cover, layer0)
       attach_side_covers(filesuffix, clips_cover, layer0)
-      outro_attacher(filesuffix, clips_all, layer0)
+      # outro_attacher(filesuffix, clips_all, layer0)
       concat_and_replace(filesuffix, filesuffix, clips_all_except_cover_and_last, layer0, vid_transparency_smol)
 
 

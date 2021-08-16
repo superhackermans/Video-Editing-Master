@@ -15,14 +15,14 @@ def count_frames(directory):
     lens = []
     for clip in clips:
         fileloc = f"{directory}{clip}"
-        packets = float(get_packets(fileloc))
-        frames.append(packets)
+        # packets = float(get_packets(fileloc))
+        # frames.append(packets)
         len = float(get_length(fileloc))
         lens.append(len)
     # print(frames)
     total_frames = sum(frames)
     total_len = sum(lens)
-    print(f"total_frames for {directory} is {total_frames}")
+    # print(f"total_frames for {directory} is {total_frames}")
     print(f"total_len for {directory} is {round(total_len, 3)}")
 
 if __name__ == '__main__':
