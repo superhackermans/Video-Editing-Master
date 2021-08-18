@@ -23,14 +23,14 @@ def main():
 
   if x == "t":
       trimmer(filesuffix, vid_dir_in, layer2) # desired output, and directory
-
-      dup_dir(layer2, backuplayer)
       # deletePath(layer2)
       # dup_dir(backuplayer, layer2)
 
       altzoom(filesuffix, clips_ben, layer2)
       slow_zoom(filesuffix, clips_ben, layer2)
       fade_out(filesuffix, clips_ben, layer2)
+
+      dup_dir(layer2, backuplayer)
 
   if x == "e":
       def reset():
@@ -43,7 +43,8 @@ def main():
           deletePath(layer_toc)
           dup_dir(backuplayer, layer2)
       reset()
-      # splitcovers(cov_dir_in)
+
+      splitcovers(cov_dir_in)
 
       if bool(clips_pop_up) == True:
           bottom_pop_ups(clips_pop_up, layer_popups)
@@ -70,7 +71,7 @@ def main():
 
       attach_covers(filesuffix, clips_cover, layer0)
       attach_side_covers(filesuffix, clips_cover, layer0)
-      # outro_attacher(filesuffix, clips_all, layer0)
+      outro_attacher(filesuffix, clips_all, layer0)
       concat_and_replace(filesuffix, filesuffix, clips_all_except_cover_and_last, layer0, vid_transparency_smol)
 
 

@@ -19,9 +19,9 @@ def concat_and_replace (suffix, new_suffix, clips, directory, replacement_footag
     clips = {int(k):v for k, v in clips.items()}
     if bool(clips) == True:
         if replacement_footage == vid_transparency_smol:
-            print(f"Adding transparency to {str(clips)} in {directory}")
+            print(f"Adding transparency to {str(clips.keys())} in {directory}")
         elif replacement_footage == backgroundloc:
-            print(f"Adding background to {str(clips)} in {directory}")
+            print(f"Adding background to {str(clips.keys())} in {directory}")
         else:
             pass
         clips_list = list(clips.keys())
@@ -57,7 +57,7 @@ def concat_and_replace (suffix, new_suffix, clips, directory, replacement_footag
 
 def add_transparency(suffix, newsuffix, clips, directory):
     # print("Adding transparency to top layer files (OUTPUT/trimmed_files/)")
-    print(f"Adding transparency to {clips} in {directory}")
+    print(f"Adding transparency to {clips.keys()} in {directory}")
     for k, v in dict(clips).items():
         filename = f"{cam}{k}{suffix}"
         INPUT_TRIMMED_FILE = f"{directory}{filename}"

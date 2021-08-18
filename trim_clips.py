@@ -132,10 +132,13 @@ def trimmer(output_suffix, directory, output_dir):
         chunks = repack(chunks)
         # if there is a long mistake, turn all noise prior mistake into 0
         midpointframe = chunks[-1, 1] * (cutoff_point)
+        # if chunks[-1][1] < 200:
+        #     midpointframe = chunks[-1, 1] * (cutoff_point*1.3)
         long_zero_idxs = np.where((chunks[:, 1] - chunks[:, 0] > MAX_SILENCE_PERMITTED) & (chunks[:, 2] == 0) & (
                     chunks[:, 0] < midpointframe))
-        if long_zero_idxs[0].shape >= (1,):
-            chunks[:long_zero_idxs[0][-1], 2] = 0
+        if chunks.shape != (3,3):
+            if long_zero_idxs[0].shape >= (1,):
+                chunks[:long_zero_idxs[0][-1], 2] = 0
         chunks = repack(chunks)
 
         # is_all_zero = np.all((audioarray == 0))
@@ -144,9 +147,11 @@ def trimmer(output_suffix, directory, output_dir):
         # st()
 
         # if there is noise at the end after silence, erase end
-        if chunks[-1][-1] == 1 and chunks[-2][-1] == 0:
-            chunks[-1][-1] = 0
+        # if chunks[-1][-1] == 1 and chunks[-2][-1] == 0:
+        #     chunks[-1][-1] = 0
         # if there is a long silence after the midpoint frame, turn all noise after silence into silence
+
+
         post_long_zero_idxs = np.where((chunks[:, 1] - chunks[:, 0] > MAX_SILENCE_PERMITTED) & (chunks[:, 2] == 0) & (
                 chunks[:, 0] > midpointframe))
         if post_long_zero_idxs[0].shape >= (1,):
