@@ -63,11 +63,11 @@ toc_loc = "{pop_up_dir}toc.mov"
 # parameters
 frameRate = 24
 SAMPLE_RATE = 44100
-SILENT_THRESHOLD = 0.06  # 0-1. 1 is max volume
+SILENT_THRESHOLD = 0.01  # 0-1. 1 is max volume
 FRAME_SPILL_FRONT_FINAL = 1
 TINY_MISTAKE_THRESHOLD = 3
 FRAME_SPILL_FRONT = 1
-FRAME_SPILL_BACK_FINAL = 6  # frames to include at the very end of the clip
+FRAME_SPILL_BACK_FINAL = 4  # frames to include at the very end of the clip
 silent_speed = 99999999999999
 sounded_speed = 1
 NEW_SPEED = [silent_speed, sounded_speed]

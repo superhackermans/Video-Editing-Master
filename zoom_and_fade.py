@@ -41,7 +41,7 @@ def slow_zoom(suffix, clips, directory):
     gamma_r = 1
     gamma_g = 0.99
     zoom_in = 1.2
-    zoom_out = 1.2
+    zoom_out = 1.3
 
     clips = list(clips.items())
 

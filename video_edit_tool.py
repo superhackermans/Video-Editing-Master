@@ -3,7 +3,7 @@ from picture_attacher import *
 from remove_audio import *
 from cover_attacher import *
 from transition_attacher import *
-from slow_zoom_and_fade import *
+from zoom_and_fade import *
 from background_layer import *
 from trim_clips import *
 from pop_ups import *
@@ -42,7 +42,7 @@ def main():
           deletePath(layer_popups)
           deletePath(layer_toc)
           dup_dir(backuplayer, layer2)
-      reset()
+      # reset()
 
       splitcovers(cov_dir_in)
 

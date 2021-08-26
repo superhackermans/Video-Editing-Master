@@ -59,7 +59,7 @@ def attach_multiple_pictures(suffix, clips, directory):
             command = f"ffmpeg -loop 1 -y -i {picture} -vcodec qtrle -t {filelen} {output_mov} -hide_banner -loglevel error "
             subprocess.call(command, shell=True)
             n = n+1
-            print(get_packets(output_mov))
+            # print(get_packets(output_mov))
             pic_lens.append(get_packets(output_mov))
         # print(pic_lens)
         # total_len = float(sum(pic_lens))
