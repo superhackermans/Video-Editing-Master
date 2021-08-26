@@ -99,7 +99,7 @@ def trimmer(output_suffix, directory, output_dir):
         samplesPerFrame = sampleRate / frameRate
         audioFrameCount = int(math.ceil(audioSampleCount / samplesPerFrame))
         hasLoudAudio = np.zeros((audioFrameCount))
-        volumeInformation = np.zeros((audioFrameCount))
+        volumeInformation = np.empty(1)
 
 
         for i in range(audioFrameCount):
@@ -110,6 +110,8 @@ def trimmer(output_suffix, directory, output_dir):
             volumeInformation = np.append(volumeInformation, maxchunksVolume)
             if maxchunksVolume >= SILENT_THRESHOLD:
                 hasLoudAudio[i] = 1
+
+        volumeInformation = volumeInformation[1:]
 
         audioarray = np.asarray(hasLoudAudio)
         chunks = pack(audioarray)
@@ -165,13 +167,13 @@ def trimmer(output_suffix, directory, output_dir):
         intro_cut = round((chunks[1][0]) / 24, 2)
         end_cut = round((chunks[-1][1] - chunks[-1][0]) / 24, 2)
 
-        if long_zero_idxs[0].shape >= (1,) and end_cut != 0:
+        if intro_cut != 0 and end_cut != 0:
             print(f'{video_name}: Trimming {intro_cut} seconds/{round(intro_cut / clip_len * 100, 2)}% from front and {end_cut} seconds/{round(end_cut / clip_len * 100, 2)}% from back.')
-        if long_zero_idxs[0].shape >= (1,) and end_cut == 0:
+        if intro_cut != 0 and end_cut == 0:
             print(f"{video_name}: Trimming {intro_cut} seconds/{round(intro_cut / clip_len * 100, 2)}% from front.")
-        if long_zero_idxs[0].shape < (1,) and end_cut != 0:
+        if intro_cut == 0 and end_cut != 0:
             print(f"{video_name}: Trimming {end_cut} seconds/{round(end_cut / clip_len * 100, 2)}% from back")
-        if long_zero_idxs[0].shape < (1,) and end_cut == 0:
+        if intro_cut == 0 and end_cut == 0:
             print("Nothing trimmed.")
 
         # make all correct frames present
@@ -181,6 +183,22 @@ def trimmer(output_suffix, directory, output_dir):
         chunks[first:last, 2] = 1
 
         chunks = repack(chunks)
+
+
+        FRAME_SPILL_BACK_FINAL = 4  # frames to include at the very end of the clip
+        s_number = 0.02
+        s_number2 = 0.015
+        s_number3 = 0.01
+        # crude s finder
+        if chunks.shape == (3,3):
+            if volumeInformation[int(chunks[1,1])] >= s_number:
+                FRAME_SPILL_BACK_FINAL = FRAME_SPILL_BACK_FINAL + 2
+            if (volumeInformation[int(chunks[1,1])+1] >= s_number2) & (volumeInformation[int(chunks[1,1])] >= s_number):
+                FRAME_SPILL_BACK_FINAL = FRAME_SPILL_BACK_FINAL + 2
+            if (volumeInformation[int(chunks[1, 1]) + 2] >= s_number3) & (volumeInformation[int(chunks[1, 1]) + 1] >= s_number2) & (volumeInformation[int(chunks[1, 1])] >= s_number):
+                FRAME_SPILL_BACK_FINAL = FRAME_SPILL_BACK_FINAL + 2
+        if FRAME_SPILL_BACK_FINAL > 4:
+            print(f"     Adding {FRAME_SPILL_BACK_FINAL} total spill frames")
 
         # add spill where necessary
         if chunks.shape == (3, 3):
@@ -195,7 +213,7 @@ def trimmer(output_suffix, directory, output_dir):
 
             chunks[0][1] = chunks[0][1] - FRAME_SPILL_FRONT_FINAL
         else:
-            print(f"2 or 3 dimensional array not detected. Shape is {chunks.shape}, please review.")
+            print(f"     2 or 3 dimensional array not detected. Shape is {chunks.shape}, please review.")
 
         # print(chunks)
         # create new Audio data array
