@@ -43,6 +43,8 @@ wav_dir = "./files/OUTPUT/wav_files/"
 pic_dir_out = "./files/OUTPUT/pictures/"
 cover_cut = "./files/OUTPUT/cutcover/"
 output_main = "./files/OUTPUT/"
+retrim_dir = "./files/INPUT/retrim/"
+
 
 TEMP_FOLDER = "TEMP"
 
@@ -306,7 +308,7 @@ clips_cover = {k: v for k, v in clips_images.items() if v == "c1" or v == "c2" o
                or v == "c7" or v == "c8" or v == "c9"
                or v == "c10" or v == "c11" or v == "c12"}
 clips_video = {k: v for k, v in clips_images.items() if
-               v == "v1" or v == "v2" or v == "v3" or v == "v4" or v == "v5"}
+               v == "v1" or v == "v2" or v == "v3" or v == "v4" or v == "v5" or v == "Video 1" or v == "Video 2" or v == "Video 3" or v == "Video 4" or v == "Video 5"}
 clips_all = {k: v for k, v in clips_images.items()}
 clips_pictures = {k: v for k, v in clips_images.items() if v.isdigit()}
 clips_mult_pics = {k: v for k, v in clips_images.items() if "," in v}

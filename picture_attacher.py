@@ -86,18 +86,18 @@ def attach_videos(suffix, clips, directory):
         ratio = (original_len / vid_len)
 
         command = f'ffmpeg -y -i {in_vid} -filter_complex "[0:v]setpts=PTS*{str(ratio)}[v]" -map "[v]" -shortest {out_vid} -hide_banner -loglevel error'
-        subprocess.call(command, shell=True)
+        # subprocess.call(command, shell=True)
 
         deleteFile(original_vid)
 
 
 if __name__ == "__main__":
-    deletePath(layer2)
-    dup_dir(layer4, layer2)
-    concat_and_replace(filesuffix, filesuffix, clips_all_except_pics_and_vid, layer2, vid_transparency_smol)
+    # deletePath(layer2)
+    # dup_dir(layer4, layer2)
+    # concat_and_replace(filesuffix, filesuffix, clips_all_except_pics_and_vid, layer2, vid_transparency_smol)
     # concat_and_replace(filesuffix, filesuffix, clips_background, layer3, backgroundloc)
     # concat_and_replace(filesuffix, filesuffix, clips_ben_and_cover, layer3, vid_transparency_smol)
 
-    attach_pictures(filesuffix, clips_pictures, layer2)
-    attach_multiple_pictures(filesuffix, clips_mult_pics, layer2)
+    # attach_pictures(filesuffix, clips_pictures, layer2)
+    # attach_multiple_pictures(filesuffix, clips_mult_pics, layer2)
     attach_videos(filesuffix, clips_video, layer2)

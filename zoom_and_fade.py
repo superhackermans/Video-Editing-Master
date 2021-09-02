@@ -21,7 +21,6 @@ def altzoom(suffix, clips, directory):
         filename = f"{cam}{clip}{suffix}"
         move_file(directory, filename, TEMP_FOLDER)
         print(f"Preparing to zoom in {filename}")
-
     for clip in alterClips:
         filename = f"{cam}{clip}{suffix}"
         print(f"Zooming in {filename}")
@@ -94,5 +93,6 @@ def fade_out(suffix, clips, directory):
     renamefile(tempfile, last_clip_loc)
 
 if __name__ == "__main__":
-    slow_zoom(filesuffix, clips_ben, backuplayer)
-    fade_out(filesuffix, clips_ben, backuplayer)
+    altzoom(filesuffix, clips_ben, layer4)
+    slow_zoom(filesuffix, clips_ben, layer4)
+    fade_out(filesuffix, clips_ben, layer4)
