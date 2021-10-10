@@ -185,10 +185,10 @@ def trimmer(output_suffix, directory, output_dir):
         chunks = repack(chunks)
 
 
-        FRAME_SPILL_BACK_FINAL = 2  # frames to include at the very end of the clip
-        s_number = 0.015
-        s_number2 = 0.015
-        s_number3 = 0.015
+        FRAME_SPILL_BACK_FINAL = 5  # frames to include at the very end of the clip
+        s_number = 0.013
+        s_number2 = 0.012
+        s_number3 = 0.011
         s_number4 = 0.01
         # crude s finder
         if chunks.shape == (3,3):
@@ -212,11 +212,14 @@ def trimmer(output_suffix, directory, output_dir):
 
             chunks[0][1] = chunks[0][1] - FRAME_SPILL_FRONT_FINAL
             chunks[2][0] = chunks[2][0] + FRAME_SPILL_BACK_FINAL
-        elif chunks.shape == (2, 3):
+        elif (chunks.shape == (2, 3)) & (chunks[0][2] == 0):
             chunks[1][0] = chunks[1][0] - FRAME_SPILL_FRONT_FINAL
             chunks[1][1] = chunks[1][1] + FRAME_SPILL_BACK_FINAL
 
             chunks[0][1] = chunks[0][1] - FRAME_SPILL_FRONT_FINAL
+        elif (chunks.shape == (2, 3)) & (chunks[0][2] == 1):
+            chunks[0][1] = chunks[0][1] + FRAME_SPILL_BACK_FINAL
+            chunks[1][0] = chunks[1][0] - FRAME_SPILL_BACK_FINAL
         else:
             print(f"     2 or 3 dimensional array not detected. Shape is {chunks.shape}, please review.")
 
@@ -281,9 +284,7 @@ def trimmer(output_suffix, directory, output_dir):
           f"Avg {round(round((time.time() - start_time) / 60, 2) / (len(myVideos)), 2)} minutes per clip.")
 
 
-def retrim(output_suffix, directory, output_dir):
-
-    additional_spill = 7
+def retrim(output_suffix, directory, output_dir, additional_spill):
 
     print("Which clips would you like to retrim?")
     x = input()
@@ -418,10 +419,10 @@ def retrim(output_suffix, directory, output_dir):
         chunks[first:last, 2] = 1
 
         chunks = repack(chunks)
-
+        # print(chunks)
         FRAME_SPILL_BACK_FINAL = 2  # frames to include at the very end of the clip
-        s_number = 0.015
-        s_number2 = 0.015
+        s_number = 0.02
+        s_number2 = 0.017
         s_number3 = 0.015
         s_number4 = 0.01
         # crude s finder
@@ -454,11 +455,15 @@ def retrim(output_suffix, directory, output_dir):
 
             chunks[0][1] = chunks[0][1] - FRAME_SPILL_FRONT_FINAL
             chunks[2][0] = chunks[2][0] + FRAME_SPILL_BACK_FINAL
-        elif chunks.shape == (2, 3):
+        elif (chunks.shape == (2, 3)) & (chunks[0][2] == 0):
             chunks[1][0] = chunks[1][0] - FRAME_SPILL_FRONT_FINAL
             chunks[1][1] = chunks[1][1] + FRAME_SPILL_BACK_FINAL
 
             chunks[0][1] = chunks[0][1] - FRAME_SPILL_FRONT_FINAL
+        elif (chunks.shape == (2,3)) & (chunks[0][2]==1):
+            chunks[0][1] = chunks[0][1] + FRAME_SPILL_BACK_FINAL
+            chunks[1][0] = chunks[1][0] - FRAME_SPILL_BACK_FINAL
+
         else:
             print(f"     2 or 3 dimensional array not detected. Shape is {chunks.shape}, please review.")
 

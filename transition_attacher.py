@@ -16,6 +16,16 @@ def transitions(suffix, clips_background, directory):
             clips_background[k] = "104"
         if v == "v5":
             clips_background[k] = "105"
+        if v == "v6":
+            clips_background[k] = "106"
+        if v == "v7":
+            clips_background[k] = "107"
+        if v == "v8":
+            clips_background[k] = "108"
+        if v == "v9":
+            clips_background[k] = "109"
+        if v == "v10":
+            clips_background[k] = "110"
         if "," in v:
             clips_background[k] = "106"
     clips_background = {int(k):int(v) for k, v in clips_background.items()}

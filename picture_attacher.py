@@ -32,7 +32,7 @@ def attach_pictures(suffix, clips, directory):
         else:
             pass
 
-        print(f"Attaching picture to {cam}{key}{suffix}")
+        print(f"Attaching {value}.png to {cam}{key}{suffix}")
         INPUT_IMAGE = f"{pic_dir_in}{cam}{key}.png"
         OUTPUT_MOV = f"{directory}{cam}{key}{suffix}"
         filelen = float(get_packets(OUTPUT_MOV))/frameRate + magicnumber
@@ -74,7 +74,7 @@ def attach_videos(suffix, clips, directory):
         if os.path.isfile(f"{pic_dir_in}{v}.mov") == True:
             input = f"{pic_dir_in}{v}.mov"
             output = f"{pic_dir_in}{v}.mp4"
-            command = f"ffmpeg -i {input} -hide_banner {output} -loglevel error"
+            command = f"ffmpeg -i -y {input} -hide_banner {output} -loglevel error"
             subprocess.call(command, shell=True)
 
         in_vid = f"{pic_dir_in}{v}.mp4"
@@ -86,7 +86,7 @@ def attach_videos(suffix, clips, directory):
         ratio = (original_len / vid_len)
 
         command = f'ffmpeg -y -i {in_vid} -filter_complex "[0:v]setpts=PTS*{str(ratio)}[v]" -map "[v]" -shortest {out_vid} -hide_banner -loglevel error'
-        # subprocess.call(command, shell=True)
+        subprocess.call(command, shell=True)
 
         deleteFile(original_vid)
 

@@ -23,10 +23,7 @@ def main():
 
   if x == "t":
       trimmer(filesuffix, vid_dir_in, layer2) # desired output, and directory
-
-      retrim(filesuffix, vid_dir_in, layer2)
-
-      dup_dir(layer2, backuplayer)
+      retrim(filesuffix, vid_dir_in, layer2, 12) # desired output, and directory and additional frame spill
 
   if x == "e":
       def reset():
@@ -37,13 +34,16 @@ def main():
           deletePath(layer0)
           deletePath(layer_popups)
           deletePath(layer_toc)
+          dup_dir(backuplayer, layer2)
+          # dup_dir(layer2, backuplayer)
       # reset()
 
-      altzoom(filesuffix, clips_ben, backuplayer)
-      slow_zoom(filesuffix, clips_ben, backuplayer)
-      fade_out(filesuffix, clips_ben, backuplayer)
+      altzoom(filesuffix, clips_benALT, layer2)
+      slow_zoom(filesuffix, clips_ben, layer2)
+      fade_out(filesuffix, clips_ben, layer2)
 
-      dup_dir(backuplayer, layer2)
+      dup_dir(layer2, backuplayer)
+      # dup_dir(backuplayer, layer2)
 
       splitcovers(cov_dir_in)
 
@@ -54,6 +54,7 @@ def main():
           pass
 
       dup_dir(layer2, layer3)
+      # add_transparency(filesuffix, filesuffix, clips_all, layer3)
       concat_and_replace(filesuffix, filesuffix, clips_background, layer3, backgroundloc)
       concat_and_replace(filesuffix, filesuffix, clips_ben_and_cover, layer3, vid_transparency_smol)
 

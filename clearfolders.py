@@ -28,24 +28,10 @@ if __name__ == '__main__':
                           cover_dir_out, layer2, layer4, backuplayer, layer0, layer_popups]
 
     if x == "yes" or x == "y":
-        for file in input_directories:
-            try:
-                deletecontents(file)
-            except:
-                pass
-
-        for file in output_directories:
-            try:
-                deletecontents(file)
-            except:
-                pass
-
-        for directory in delete_directories:
-            try:
-                shutil.rmtree(directory)
-            except:
-                pass
+        deletecontents(output_main)
+        deletecontents("./files/INPUT/")
         erasetextfile(data_file)
+        make_folders()
     elif x == "o":
         for file in output_directories:
             try:
@@ -58,6 +44,5 @@ if __name__ == '__main__':
                 shutil.rmtree(directory)
             except:
                 pass
-
     else:
         print("Nothing deleted")

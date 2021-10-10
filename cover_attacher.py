@@ -153,11 +153,44 @@ def outro_attacher(suffix, clips, directory):
     outro_clip = f"{directory}{cam}{str(int(clips[-1][0])+1).zfill(4)}{suffix}"
     copyfile(outro, outro_clip)
 
+def splittoc(directory):
+    myCovers = []
+    print("Spliting Cover Page: ")
+
+    for file in os.listdir(directory):
+        if file.endswith(".mov") or file.endswith(".MOV"):
+            myCovers.append(file)
+    if not myCovers:
+        print("No input covers detected")
+    myCovers = sorted(myCovers)
+
+    for cover in myCovers:
+        print(cover)
+        INPUT_COVER = f"{directory}{cover}"
+        assert INPUT_COVER != None, "No Input File Detected"
+        OUTPUT_COVER1 = f"{cover_dir_out}{inputToOutputFilenameBEG(cover)}"
+        OUTPUT_COVER2 = f"{cover_dir_out}{inputToOutputFilenameMID(cover)}"
+        OUTPUT_COVER3 = f"{cover_dir_out}{inputToOutputFilenameEND(cover)}"
+
+        # -ss 0 -t 1 are start and length, respectively
+        command = f"ffmpeg -y -ignore_chapters 1 -i {INPUT_COVER} -vcodec qtrle -ss 0 -t 4 {OUTPUT_COVER1} -hide_banner -loglevel error"
+        # f" -c:v libx264 -strict -2 " \
+        subprocess.call(command, shell=True)
+
+        command = f"ffmpeg -y -ignore_chapters 1 -i {INPUT_COVER}  -vcodec qtrle -ss 4 -t 1 {OUTPUT_COVER2} -hide_banner -loglevel error"
+        # f" -c:v libx264 -strict -2 " \
+        subprocess.call(command, shell=True)
+
+        command = f"ffmpeg -y -ignore_chapters 1 -i {INPUT_COVER}  -vcodec qtrle -ss 5 -t 3 {OUTPUT_COVER3} -hide_banner -loglevel error"
+        # f" -c:v libx264 -strict -2 " \
+        subprocess.call(command, shell=True)
+
+
 if __name__ == '__main__':
     # dup_dir(backuplayer, layer0)
     # outro_attacher(filesuffix, clips_all, layer0)
-    attach_side_covers("_TRIMMEDEMPTY.MOV", clips_cover, layer1)
-
+    # attach_side_covers("_TRIMMEDEMPTY.MOV", clips_cover, layer1)
+    splittoc(".files/INPUT/toc/")
 
 
 
