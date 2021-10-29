@@ -37,7 +37,6 @@ def deleteclip(directory, suffix, clip_to_delete, last_clip):
     while clip(clip_to_delete) != clip(last_clip):
         os.rename(clip(clip_to_delete+1), clip(clip_to_delete))
         clip_to_delete += 1
-        print(clip_to_delete)
 
 
 if __name__ == '__main__':

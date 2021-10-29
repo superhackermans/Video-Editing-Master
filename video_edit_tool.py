@@ -153,9 +153,15 @@ def main():
       y = input()
       print("What is the last clip?")
       z = input()
-      deleteclip(vid_dir_in, ".MP4", y, z)  # (directory, suffix, clip_to_delete, last_clip)
+      deleteclip(vid_dir_in, ".MP4", int(y), int(z))  # (directory, suffix, clip_to_delete, last_clip)
   if x == "rn":
-      print("poop")
+      print("Which clip would you like to insert?")
+      y = input()
+      print("Which clip will this replace?")
+      z = input()
+      print("What is the last clip?")
+      zz = input()
+      renumber(vid_dir_in, ".MP4", int(y), int(z), int(zz)) #renumber(vid_dir_in, ".MP4", 717, 706, 715) (directory, suffix, replacement_clip, clip_to_replace, last_clip)
 
   else:
       pass
