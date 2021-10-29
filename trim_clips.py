@@ -284,7 +284,7 @@ def trimmer(output_suffix, directory, output_dir):
           f"Avg {round(round((time.time() - start_time) / 60, 2) / (len(myVideos)), 2)} minutes per clip.")
 
 
-def retrim(output_suffix, directory, output_dir, additional_spill):
+def retrim(output_suffix, directory, output_dir, additional_spill, silentthresh):
 
     print("Which clips would you like to retrim?")
     x = input()
@@ -344,7 +344,7 @@ def retrim(output_suffix, directory, output_dir, additional_spill):
             audiochunks = audioData[start:end]
             maxchunksVolume = float(getMaxVolume(audiochunks)) / maxAudioVolume
             volumeInformation = np.append(volumeInformation, maxchunksVolume)
-            if maxchunksVolume >= SILENT_THRESHOLD:
+            if maxchunksVolume >= silentthresh:
                 hasLoudAudio[i] = 1
 
         volumeInformation = volumeInformation[1:]
