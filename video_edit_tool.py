@@ -9,6 +9,7 @@ from trim_clips import *
 from pop_ups import *
 import time
 from trim_clips import *
+from Renumber import *
 
 
 
@@ -19,7 +20,10 @@ def main():
         "For trimmer only type 't'. \n"
         "For zooms only type 'z'. \n"
         "For everything else type 'e'. \n"
-        "To reset and rerun, type 'r')")
+        "To reset and rerun, type 'r') \n"
+        "To delete a clip, type 'd') \n"
+        "To renumber a clip, type 'rn') \n")
+
   x = input()
 
   make_folders()
@@ -139,6 +143,20 @@ def main():
       deletePath(wav_dir)
       deletePath(cover_cut)
       deletePath(wav_converting)
+
+
+  # renumber(vid_dir_in, ".MP4", 717, 706, 715) (directory, suffix, replacement_clip, clip_to_replace, last_clip)
+  # deleteclip(vid_dir_in, ".MP4", 706, 715) #(directory, suffix, clip_to_delete, last_clip)
+
+  if x == "d":
+      print("Which clip would you like to delete?")
+      y = input()
+      print("What is the last clip?")
+      z = input()
+      deleteclip(vid_dir_in, ".MP4", y, z)  # (directory, suffix, clip_to_delete, last_clip)
+  if x == "rn":
+      print("poop")
+
   else:
       pass
   print(f"Program took {round((time.time() - start_time) / 60, 2)} minutes to finish.")
