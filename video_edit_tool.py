@@ -19,7 +19,7 @@ def main():
   print("What would you like to run? \n"
         "For trimmer only type 't'. \n"
         "For zooms only type 'z'. \n"
-        "For everything else type 'e'. \n"
+        "For everything besides trimmer type 'e'. \n"
         "To reset and rerun, type 'r') \n"
         "To delete a clip, type 'd') \n"
         "To renumber a clip, type 'rn') \n")
@@ -29,8 +29,8 @@ def main():
   make_folders()
 
   if x == "t":
-      trimmer(filesuffix, vid_dir_in, layer2) # desired output, and directory
-      retrim(filesuffix, vid_dir_in, layer2, 12, 0.03) # desired output, and directory and additional frame spill
+      # trimmer(filesuffix, vid_dir_in, layer2) # desired output, and directory
+      retrim(filesuffix, vid_dir_in, layer2, 12, 0.03) # desired output, and directory and additional frame spill/threshold for silence
 
   if x == "z":
       altzoom(filesuffix, clips_benALT, layer2)
@@ -38,23 +38,12 @@ def main():
       fade_out(filesuffix, clips_ben, layer2)
 
   if x == "e":
-      def reset():
-          deletePath(layer1)
-          deletePath(layer2)
-          deletePath(layer3)
-          deletePath(layer4)
-          deletePath(layer0)
-          deletePath(layer_popups)
-          deletePath(layer_toc)
-          dup_dir(backuplayer, layer2)
-          # dup_dir(layer2, backuplayer)
-      reset()
 
-      # altzoom(filesuffix, clips_benALT, layer2)
-      # slow_zoom(filesuffix, clips_ben, layer2)
-      # fade_out(filesuffix, clips_ben, layer2)
-      # dup_dir(layer2, backuplayer)
-      # splitcovers(cov_dir_in)
+      altzoom(filesuffix, clips_benALT, layer2)
+      slow_zoom(filesuffix, clips_ben, layer2)
+      fade_out(filesuffix, clips_ben, layer2)
+      dup_dir(layer2, backuplayer)
+      splitcovers(cov_dir_in)
 
       if bool(clips_pop_up) == True:
           bottom_pop_ups(clips_pop_up, layer_popups)
@@ -84,7 +73,6 @@ def main():
       attach_side_covers(filesuffix, clips_cover, layer0)
       outro_attacher(filesuffix, clips_all, layer0)
       concat_and_replace(filesuffix, filesuffix, clips_all_except_cover_and_last, layer0, vid_transparency_smol)
-
 
       transitions(filesuffix, clips_background, layer1)
       concat_and_replace(filesuffix, filesuffix, clips_background, layer1, vid_transparency_smol)
@@ -153,7 +141,16 @@ def main():
       y = input()
       print("What is the last clip?")
       z = input()
-      deleteclip(vid_dir_in, ".MP4", int(y), int(z))  # (directory, suffix, clip_to_delete, last_clip)
+      try:
+          deleteclip(layer2, "_TRIMMED.MOV", int(y), int(z))
+          print("Clip deleted from video directory out")
+      except:
+          pass
+      try:
+          deleteclip(vid_dir_in, ".MP4", int(y), int(z))# (directory, suffix, clip_to_delete, last_clip)
+          print("Clip deleted from video directory in")
+      except:
+          pass
   if x == "rn":
       print("Which clip would you like to insert?")
       y = input()
@@ -161,7 +158,16 @@ def main():
       z = input()
       print("What is the last clip?")
       zz = input()
-      renumber(vid_dir_in, ".MP4", int(y), int(z), int(zz)) #renumber(vid_dir_in, ".MP4", 717, 706, 715) (directory, suffix, replacement_clip, clip_to_replace, last_clip)
+      try:
+          renumber(layer2, "_TRIMMED.MOV", int(y), int(z), int(zz))
+          print("Clip renumbered from video directory out")
+      except:
+          pass
+      try:
+          renumber(vid_dir_in, ".MP4", int(y), int(z), int(zz)) #renumber(vid_dir_in, ".MP4", 717, 706, 715) (directory, suffix, replacement_clip, clip_to_replace, last_clip)
+          print("Clip renumbered from video directory in")
+      except:
+          pass
 
   else:
       pass

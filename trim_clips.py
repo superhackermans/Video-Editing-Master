@@ -295,7 +295,7 @@ def retrim(output_suffix, directory, output_dir, additional_spill, silentthresh)
     myVideos = []
 
     for x in x_list:
-        myVideos.append(f"C0{x}.mp4")
+        myVideos.append(f"C{x.zfill(4)}.mp4")
 
     deletePath(TEMP_FOLDER)
     start_time = time.time()

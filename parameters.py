@@ -303,7 +303,11 @@ clips_images = readfile(data_file)
 clips_pop_up = {k: v for k, v in clips_images.items() if v == "b1" or v == "b2" or v == "b3"
                 or v == "b4" or v == "b5" or v == "b6"
                 or v == "b7" or v == "b8" or v == "b9"
-                or v == "b10" or v == "b11" or v == "b12"}
+                or v == "b10" or v == "b11" or v == "b12"
+                or v == "b13" or v == "b14" or v == "b15"
+                or v == "b16" or v == "b17" or v == "b18"
+                or v == "b19" or v == "b20" or v == "b21"
+                or v == "b22" or v == "b23" or v == "b24"}
 clips_cover = {k: v for k, v in clips_images.items() if v == "c1" or v == "c2" or v == "c3"
                or v == "c4" or v == "c5" or v == "c6"
                or v == "c7" or v == "c8" or v == "c9"
