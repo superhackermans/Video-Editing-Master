@@ -18,6 +18,7 @@ def main():
 
   print("What would you like to run? \n"
         "For trimmer only type 't'. \n"
+        "To retrim type 'rt'. \n"
         "For zooms only type 'z'. \n"
         "For everything besides trimmer type 'e'. \n"
         "To reset and rerun, type 'r') \n"
@@ -29,9 +30,11 @@ def main():
   make_folders()
 
   if x == "t":
+      trimmer(filesuffix, vid_dir_in, layer2) # desired output, and directory
+      # retrim(filesuffix, vid_dir_in, layer2, 12, 0.03) # desired output, and directory and additional frame spill/threshold for silence
+  if x == "rt":
       # trimmer(filesuffix, vid_dir_in, layer2) # desired output, and directory
       retrim(filesuffix, vid_dir_in, layer2, 12, 0.03) # desired output, and directory and additional frame spill/threshold for silence
-
   if x == "z":
       altzoom(filesuffix, clips_benALT, layer2)
       slow_zoom(filesuffix, clips_ben, layer2)
@@ -131,7 +134,6 @@ def main():
       deletePath(wav_dir)
       deletePath(cover_cut)
       deletePath(wav_converting)
-
 
   # renumber(vid_dir_in, ".MP4", 717, 706, 715) (directory, suffix, replacement_clip, clip_to_replace, last_clip)
   # deleteclip(vid_dir_in, ".MP4", 706, 715) #(directory, suffix, clip_to_delete, last_clip)

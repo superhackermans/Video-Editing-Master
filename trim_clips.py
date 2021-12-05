@@ -185,11 +185,11 @@ def trimmer(output_suffix, directory, output_dir):
         chunks = repack(chunks)
 
 
-        FRAME_SPILL_BACK_FINAL = 5  # frames to include at the very end of the clip
-        s_number = 0.013
-        s_number2 = 0.012
-        s_number3 = 0.011
-        s_number4 = 0.01
+        FRAME_SPILL_BACK_FINAL = 6  # frames to include at the very end of the clip
+        s_number = 0.012
+        s_number2 = 0.011
+        s_number3 = 0.010
+        s_number4 = 0.009
         # crude s finder
         if chunks.shape == (3,3):
             if volumeInformation[int(chunks[1,1])] >= s_number:
