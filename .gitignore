@@ -1,0 +1,22 @@
+# Ignore actual files inside INPUT and OUTPUT subfolders (they're large)
+files/INPUT/**/*
+files/OUTPUT/**/*
+
+# But keep the folder structure via .gitkeep
+!files/INPUT/**/.gitkeep
+!files/OUTPUT/**/.gitkeep
+
+# Also ignore files directly in INPUT/OUTPUT roots
+files/INPUT/*
+files/OUTPUT/*
+
+# But keep the subdirectories themselves
+!files/INPUT/*/
+!files/OUTPUT/*/
+
+# OS files
+.DS_Store
+
+# Python cache
+__pycache__/
+*.pyc
